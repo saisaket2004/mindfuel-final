@@ -366,10 +366,3 @@ select option {
     background-color: #0f172a !important;
     color: white !important;
 }
-
-#assessment-screen { 
-    display: block !important; 
-    visibility: visible !important; 
-    min-height: 200px !important; 
-    color: white !important; 
-}
