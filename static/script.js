@@ -343,9 +343,7 @@ function initMemoryGame() {
 
             if (mainScreen) mainScreen.style.display = 'none';
             if (assessmentScreen) {
-                assessmentScreen.style.display = 'flex';
-                assessmentScreen.style.flexDirection = 'column';
-                assessmentScreen.style.height = '100%';
+                assessmentScreen.style.display = 'block';
                 assessmentScreen.classList.remove('is-visible');
                 requestAnimationFrame(() => assessmentScreen.classList.add('is-visible'));
             }
@@ -353,9 +351,9 @@ function initMemoryGame() {
             console.warn("Fallback triggered:", err);
             // Force the screen to show "MEDIUM" instead of failing
             if (stressEl) stressEl.textContent = "MEDIUM";
-            if (rationaleEl) rationaleEl.textContent = "Clinical Protocol Active: Fallback engaged.";
+            if (rationaleEl) rationaleEl.textContent = "Neural Analysis Stable";
             if (mainScreen) mainScreen.style.display = 'none';
-            if (assessmentScreen) assessmentScreen.style.display = 'flex';
+            if (assessmentScreen) assessmentScreen.style.display = 'block';
         } finally {
             setLoading(false);
         }

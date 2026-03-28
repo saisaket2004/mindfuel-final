@@ -366,30 +366,3 @@ select option {
     background-color: #0f172a !important;
     color: white !important;
 }
-
-#assessment-screen {
-    display: flex !important;
-    flex-direction: column !important;
-    min-height: 400px !important;
-    color: #ffffff !important;
-}
-
-#assessment-stress-level {
-    color: #2dd4bf !important;
-    font-size: 2rem !important;
-    font-weight: bold !important;
-    display: block !important;
-}
-
-#assessment-rationale {
-    color: #e2e8f0 !important;
-    font-size: 1.1rem !important;
-    line-height: 1.6 !important;
-    display: block !important;
-}
-
-.assessment-screen div,
-.assessment-screen span {
-    visibility: visible !important;
-    opacity: 1 !important;
-}
