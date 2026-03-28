@@ -12,6 +12,7 @@
 <body class="lock-scroll"> <nav class="navbar">
         <div class="brand"><i class="fa-solid fa-dna"></i> MindFuel AI</div>
         <div style="display: flex; gap: 15px;">
+            <a href="/about" class="nav-pill" style="color: #38bdf8;"><i class="fa-solid fa-book-open"></i> How it Works</a>
             <a href="/games" class="nav-pill"><i class="fa-solid fa-microscope"></i> Targeted Digital Therapeutics</a>
             {% if request.cookies.get('token') %}
                 <a href="/logout" class="nav-pill" style="color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
@@ -104,7 +105,7 @@
                     </div>
                 </div>
 
-                <div class="chat-container" style="display: none;">
+                <div class="chat-container">
                     <div class="chat-header">MindFuel Clinical Companion</div>
                     <div id="chat-display" class="chat-display"></div>
                     <div class="chat-input-area">

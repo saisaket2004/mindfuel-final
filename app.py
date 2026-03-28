@@ -43,11 +43,15 @@ if TF_AVAILABLE:
 MAX_LEN = 100
 
 def get_prediction(text, sleep, work, screen, activity):
+    def fallback(t):
+        t_low = t.lower()
+        if any(w in t_low for w in ['depress', 'stress', 'bad', 'overwhelm', 'panic', 'anxi']):
+            return "High"
+        return "Medium"
+
     if not model:
-        score = (work + screen) - (sleep + activity * 2)
-        if score > 10: return "High"
-        elif score > 5: return "Medium"
-        else: return "Low"
+        return fallback(text)
+    
     try:
         seq = tokenizer.texts_to_sequences([text])
         padded = pad_sequences(seq, maxlen=MAX_LEN, padding='post', truncating='post')
@@ -57,7 +61,7 @@ def get_prediction(text, sleep, work, screen, activity):
         class_idx = np.argmax(prediction)
         return label_encoder.inverse_transform([class_idx])[0]
     except Exception:
-        return "Medium"
+        return fallback(text)
 
 def token_required(f):
     @wraps(f)
@@ -109,6 +113,10 @@ def logout():
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/predict', methods=['POST'])
 @token_required
@@ -190,7 +198,7 @@ def companion_chat():
         data = request.get_json()
         user_message = data.get('message', '').lower()
         
-        response_text = "System online. I am monitoring your biometric trends. How are you feeling right now?"
+        response_text = "Neural patterns stable. Biometric monitoring active. How can I assist your grounding today?"
         
         if any(keyword in user_message for keyword in ['breakup', 'ex', 'lonely']):
             response_text = "Heart rate variability suggests emotional distress. It is okay to feel this way. Let us focus on grounding your current state."

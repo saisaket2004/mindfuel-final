@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science Behind MindFuel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="lock-scroll" style="overflow-y: auto;">
+    <nav class="navbar">
+        <div class="brand"><i class="fa-solid fa-dna"></i> MindFuel AI</div>
+        <div style="display: flex; gap: 15px;">
+            <a href="/" class="nav-pill"><i class="fa-solid fa-home"></i> Dashboard</a>
+            <a href="/about" class="nav-pill" style="color: #38bdf8;"><i class="fa-solid fa-book-open"></i> How it Works</a>
+            <a href="/games" class="nav-pill"><i class="fa-solid fa-microscope"></i> Targeted Digital Therapeutics</a>
+        </div>
+    </nav>
+
+    <main style="max-width: 1000px; margin: 120px auto; padding: 0 5%;">
+        <div class="fade-in" style="background: var(--surface); backdrop-filter: blur(20px); padding: 3rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);">
+            <h1 style="font-size: 3rem; margin-bottom: 1.5rem; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                The Science Behind MindFuel
+            </h1>
+            
+            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                MindFuel leverages evidence-based neurological principles to down-regulate acute stress without traditional pharmacological interventions. By blending cognitive offloading with rapid biometric feedback loops, we provide clinically sound micro-therapies exactly when you need them.
+            </p>
+
+            <h2 style="color: #818cf8; margin-top: 2rem; margin-bottom: 1rem;"><i class="fa-solid fa-water"></i> Flow State Induction</h2>
+            <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem;">
+                Our sensory interactions (such as the Bubble Release and Particle Flow modules) are explicitly designed using the "Flow" framework out of positive psychology. By providing an interactive task that perfectly balances the user's skill with the challenge level, we block the prefrontal cortex from looping anxious ideation.
+            </p>
+
+            <h2 style="color: #2dd4bf; margin-top: 2rem; margin-bottom: 1rem;"><i class="fa-solid fa-brain"></i> Neural Monitoring</h2>
+            <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem;">
+                By capturing a baseline snapshot of your somatic markers (sleep, work hours, ambient activity, and linguistic markers), our system creates a fast neural signature footprint. This allows the backend to precisely map your specific stress phenotype and immediately dispense the correct modality.
+            </p>
+
+            <h2 style="color: #ec4899; margin-top: 2rem; margin-bottom: 1rem;"><i class="fa-solid fa-arrows-down-to-line"></i> Cognitive Offloading</h2>
+            <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem;">
+                The Clinical Assistant provides zero-latency empathetic mirroring. Psychological studies show that externalizing emotional turmoil to a highly responsive, non-judgmental entity immediately decreases amygdala activation and returns executive control to the user.
+            </p>
+        </div>
+    </main>
+</body>
+</html>
