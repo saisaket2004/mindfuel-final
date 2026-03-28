@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zen Memory | Advanced Therapeutic Matching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Animation */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(45, 212, 191, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            animation: ambient-shift 15s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes ambient-shift {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            100% { transform: scale(1.1) rotate(3deg); opacity: 0.8; }
+        }
+
+        /* Floating Particles - Reduced for less distraction */
+        .particle-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .floating-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.6), transparent);
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(var(--drift)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Breathing Indicator - Enhanced */
+        .breathing-guide {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(45, 212, 191, 0.2), transparent 70%);
+            border: 2px solid rgba(45, 212, 191, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: breathe 6s ease-in-out infinite;
+            cursor: help;
+            transition: all 0.3s;
+            opacity: 0.5;
+            z-index: 20;
+        }
+
+        .breathing-guide:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .breathing-guide::after {
+            content: '';
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(45, 212, 191, 0.15);
+            animation: breathe-inner 6s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); border-color: rgba(45, 212, 191, 0.4); box-shadow: 0 0 0 rgba(45, 212, 191, 0.4); }
+            50% { transform: scale(1.25); border-color: rgba(99, 102, 241, 0.6); box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+        }
+
+        @keyframes breathe-inner {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.4); opacity: 0.1; }
+        }
+
+        .breath-tooltip {
+            position: absolute;
+            top: -45px;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            border: 1px solid rgba(45, 212, 191, 0.3);
+        }
+
+        .breathing-guide:hover .breath-tooltip {
+            opacity: 1;
+        }
+
+        /* Breath Phase Indicator */
+        .breath-phase {
+            position: absolute;
+            bottom: -30px;
+            font-size: 0.65rem;
+            color: #2dd4bf;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .breathing-guide:hover .breath-phase {
+            opacity: 1;
+        }
+
+        /* Stress Level Indicator */
+        .stress-meter {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 20;
+            min-width: 140px;
+        }
+
+        .stress-label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stress-bar-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+            width: 100%;
+            transition: width 0.5s ease, background 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .stress-bar.medium {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+
+        .stress-bar.high {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+        }
+
+        .stress-text {
+            font-size: 0.75rem;
+            color: #2dd4bf;
+            font-weight: 500;
+            transition: color 0.5s ease;
+        }
+
+        /* Compact HUD */
+        .hud {
+            display: flex;
+            gap: 1.2rem;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.75rem 1.3rem;
+            border-radius: 35px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .stat-label { 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            color: #94a3b8; 
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+        
+        .stat-value { 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            background: linear-gradient(135deg, #818cf8, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Difficulty Selector - More Compact */
+        .difficulty-selector {
+            display: flex;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 6px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .difficulty-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 7px 14px;
+            border-radius: 18px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .difficulty-btn i {
+            font-size: 0.75rem;
+        }
+
+        .difficulty-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(129, 140, 248, 0.3));
+            border-color: rgba(129, 140, 248, 0.5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Grid - Adaptive Layout */
+        .grid { 
+            display: grid; 
+            gap: 10px; 
+            perspective: 1200px;
+            transition: all 0.5s ease;
+        }
+
+        .grid.easy { grid-template-columns: repeat(3, 1fr); }
+        .grid.medium { grid-template-columns: repeat(4, 1fr); }
+        .grid.hard { grid-template-columns: repeat(5, 1fr); }
+
+        /* Card 3D Flip - Enhanced */
+        .card {
+            width: 85px; 
+            height: 85px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+
+        .grid.easy .card { width: 95px; height: 95px; }
+        .grid.hard .card { width: 70px; height: 70px; }
+
+        .card:hover:not(.flipped):not(.matched) { 
+            transform: translateY(-5px) scale(1.05);
+            transition: transform 0.2s;
+        }
+
+        .card:active { 
+            transform: scale(0.95); 
+            transition: 0.1s; 
+        }
+
+        .card.flipped { 
+            transform: rotateY(180deg); 
+        }
+
+        /* Gentle shake on mismatch */
+        .card.shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotateY(0deg) translateX(0); }
+            25% { transform: rotateY(0deg) translateX(-5px); }
+            75% { transform: rotateY(0deg) translateX(5px); }
+        }
+
+        /* Card glow on match */
+        .card.matched {
+            animation: matchGlow 1s ease-out;
+        }
+
+        @keyframes matchGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(45, 212, 191, 0.6)); }
+        }
+
+        /* Front and Back Faces */
+        .face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-size: 2.3rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+
+        .grid.hard .face {
+            font-size: 1.8rem;
+            border-radius: 12px;
+        }
+
+        /* Card Back - Enhanced gradient */
+        .face-back {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.85), rgba(129, 140, 248, 0.85));
+            border: 1px solid rgba(255,255,255,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .face-back::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
+            animation: cardPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cardPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.25; }
+        }
+
+        /* Card Front */
+        .face-front {
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            color: #0f172a;
+            transform: rotateY(180deg);
+            border: 1px solid rgba(100, 116, 139, 0.1);
+        }
+
+        /* Matched State */
+        .card.matched .face-front {
+            background: linear-gradient(135deg, #14b8a6, #2dd4bf);
+            color: white;
+            box-shadow: 0 0 30px rgba(20, 184, 166, 0.4);
+            animation: match-pulse 1s ease-out;
+        }
+
+        @keyframes match-pulse {
+            0% { transform: rotateY(180deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.15); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        /* Victory Modal - Refined */
+        .modal {
+            position: fixed; 
+            inset: 0;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(15px);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.5s;
+            z-index: 100;
+        }
+        
+        .modal.visible { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 2rem 2.5rem; 
+            border-radius: 20px;
+            text-align: center; 
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            transform: translateY(30px) scale(0.9); 
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 380px;
+        }
+        
+        .modal.visible .modal-content { 
+            transform: translateY(0) scale(1); 
+        }
+
+        .modal h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            animation: celebration 1.5s ease-in-out infinite;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .modal h2 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #818cf8, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-stats {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin: 1.2rem 0;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .modal-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .modal-stat-label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .modal-stat-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2dd4bf;
+        }
+
+        .performance-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #2dd4bf;
+            margin: 0.8rem 0;
+            font-weight: 500;
+        }
+
+        .encouragement {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin: 0.8rem 0;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #6366f1, #818cf8);
+            color: white; 
+            border: none;
+            padding: 11px 28px; 
+            border-radius: 12px; 
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer; 
+            margin-top: 0.8rem; 
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .btn-reset:hover { 
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-reset:active {
+            transform: translateY(0);
+        }
+
+        /* Controls - Refined */
+        .controls { 
+            position: fixed; 
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+        
+        .btn-control { 
+            color: #94a3b8; 
+            text-decoration: none; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 7px 16px; 
+            border-radius: 18px; 
+            font-size: 0.75rem; 
+            transition: all 0.3s;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-control i {
+            font-size: 0.8rem;
+        }
+
+        .btn-control:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            border-color: rgba(129, 140, 248, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-control:active {
+            transform: translateY(0);
+        }
+
+        /* Encouragement Messages - Smaller */
+        .encouragement-banner {
+            position: fixed;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.12), rgba(99, 102, 241, 0.12));
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            padding: 8px 20px;
+            border-radius: 18px;
+            font-size: 0.75rem;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 50;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .encouragement-banner.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Pause Overlay - Refined */
+        .pause-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            z-index: 90;
+        }
+
+        .pause-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .pause-content {
+            text-align: center;
+            max-width: 450px;
+            padding: 2rem;
+        }
+
+        .pause-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #818cf8, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pause-content p {
+            color: #94a3b8;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Achievement Toast */
+        .achievement-toast {
+            position: fixed;
+            top: -100px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.9), rgba(167, 139, 250, 0.9));
+            padding: 12px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 150;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .achievement-toast.show {
+            top: 30px;
+        }
+
+        .achievement-icon {
+            font-size: 1.5rem;
+        }
+
+        .achievement-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* Combo Counter */
+        .combo-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2dd4bf;
+            text-shadow: 0 0 20px rgba(45, 212, 191, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 80;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .combo-display.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card { width: 65px; height: 65px; }
+            .grid.easy .card { width: 75px; height: 75px; }
+            .grid.hard .card { width: 55px; height: 55px; }
+            .breathing-guide { top: 15px; right: 15px; width: 55px; height: 55px; }
+            .stress-meter { top: 15px; left: 15px; }
+            .face { font-size: 1.8rem; }
+            .grid.hard .face { font-size: 1.5rem; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+
+    
+    <div class="particle-container" id="particleContainer"></div>
+
+    
+    <div class="stress-meter">
+        <div class="stress-label">Calm Level</div>
+        <div class="stress-bar-container">
+            <div class="stress-bar" id="stressBar"></div>
+        </div>
+        <div class="stress-text" id="stressText">Relaxed</div>
+    </div>
+
+    
+    <div class="breathing-guide" title="Breathe with the circle">
+        <div class="breath-tooltip">Follow the rhythm</div>
+        <div class="breath-phase" id="breathPhase">Breathe In</div>
+    </div>
+
+    
+    <div class="encouragement-banner" id="encouragement"></div>
+
+    
+    <div class="combo-display" id="comboDisplay"></div>
+
+    
+    <div class="achievement-toast" id="achievementToast">
+        <div class="achievement-icon">🏆</div>
+        <div class="achievement-text" id="achievementText"></div>
+    </div>
+
+    <div class="game-container">
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn" data-level="easy" onclick="setDifficulty('easy')">
+                <i class="fa-solid fa-seedling"></i> Gentle
+            </button>
+            <button class="difficulty-btn active" data-level="medium" onclick="setDifficulty('medium')">
+                <i class="fa-solid fa-water"></i> Balanced
+            </button>
+            <button class="difficulty-btn" data-level="hard" onclick="setDifficulty('hard')">
+                <i class="fa-solid fa-mountain"></i> Challenge
+            </button>
+        </div>
+
+        
+        <div class="hud">
+            <div class="stat">
+                <span class="stat-label">Moves</span>
+                <span class="stat-value" id="move-count">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Time</span>
+                <span class="stat-value" id="time-count">00:00</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Pairs</span>
+                <span class="stat-value" id="match-count">0</span>
+            </div>
+        </div>
+
+        
+        <div class="grid medium" id="grid"></div>
+    </div>
+
+    
+    <div class="controls">
+        <a href="/games" class="btn-control">
+            <i class="fa-solid fa-home"></i> Menu
+        </a>
+        <button onclick="togglePause()" class="btn-control" id="pauseBtn">
+            <i class="fa-solid fa-pause"></i> Pause
+        </button>
+        <button onclick="restartGame()" class="btn-control">
+            <i class="fa-solid fa-rotate-right"></i> Restart
+        </button>
+    </div>
+
+    
+    <div class="pause-overlay" id="pauseOverlay">
+        <div class="pause-content">
+            <h2>Mindful Pause ⏸️</h2>
+            <p>Take a moment to breathe deeply. Notice your thoughts without judgment. Your progress is saved. Continue when you feel ready.</p>
+            <button class="btn-reset" onclick="togglePause()">
+                <i class="fa-solid fa-play"></i> Continue
+            </button>
+        </div>
+    </div>
+
+    
+    <div class="modal" id="victory-modal">
+        <div class="modal-content">
+            <h1>🌸</h1>
+            <h2>Mindful Completion</h2>
+            <div class="performance-badge" id="performanceBadge">Perfect Focus</div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <span class="modal-stat-label">Moves</span>
+                    <span class="modal-stat-value" id="final-moves">0</span>
+                </div>
+                <div class="modal-stat">
+                    <span class="modal-stat-label">Time</span>
+                    <span class="modal-stat-value" id="final-time">0:00</span>
+                </div>
+                <div class="modal-stat">
+                    <span class="modal-stat-label">Accuracy</span>
+                    <span class="modal-stat-value" id="final-accuracy">0%</span>
+                </div>
+            </div>
+            <p class="encouragement" id="final-encouragement">You maintained focus and found clarity.</p>
+            <button class="btn-reset" onclick="restartGame()">
+                <i class="fa-solid fa-rotate-right"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const moveEl = document.getElementById('move-count');
+        const timeEl = document.getElementById('time-count');
+        const matchEl = document.getElementById('match-count');
+        const modal = document.getElementById('victory-modal');
+        const finalMoves = document.getElementById('final-moves');
+        const finalTime = document.getElementById('final-time');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const encouragementEl = document.getElementById('encouragement');
+        const pauseOverlay = document.getElementById('pauseOverlay');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stressBar = document.getElementById('stressBar');
+        const stressText = document.getElementById('stressText');
+        const breathPhase = document.getElementById('breathPhase');
+        const comboDisplay = document.getElementById('comboDisplay');
+        const achievementToast = document.getElementById('achievementToast');
+        const achievementText = document.getElementById('achievementText');
+        const performanceBadge = document.getElementById('performanceBadge');
+
+        // Therapeutic emoji sets - carefully chosen for positive associations
+        const emojiSets = {
+            easy: ['🌙', '🌙', '⭐', '⭐', '🌊', '🌊', '🌸', '🌸', '🍃', '🍃'],
+            medium: ['🌙', '🌙', '⭐', '⭐', '🌊', '🌊', '🌸', '🌸', '🍃', '🍃', '🐚', '🐚', '🦋', '🦋', '🌺', '🌺'],
+            hard: ['🌙', '🌙', '⭐', '⭐', '🌊', '🌊', '🌸', '🌸', '🍃', '🍃', '🐚', '🐚', '🦋', '🦋', '🌺', '🌺', '🪷', '🪷', '🕊️', '🕊️', '🌿', '🌿', '🍄', '🍄', '🌵', '🌵']
+        };
+
+        // Enhanced encouragement system
+        const encouragements = {
+            firstMatch: ["Great awareness!", "You're focused!", "Beautiful connection", "Well noticed!"],
+            combo: ["Perfect rhythm!", "Excellent flow!", "You're in sync!", "Amazing focus!"],
+            halfwayMatch: ["Halfway there!", "Wonderful progress", "Keep this pace", "You're doing great"],
+            almostDone: ["Almost complete!", "Nearly there!", "Final stretch!", "One more pair"],
+            victory: {
+                excellent: "Exceptional focus! You found flow effortlessly.",
+                good: "Beautiful mindfulness. You stayed present throughout.",
+                moderate: "Wonderful patience. You persisted with calm.",
+                learning: "Growth mindset achieved. Each attempt builds mastery."
+            }
+        };
+
+        // Achievement system
+        const achievements = {
+            firstMatch: { unlocked: false, name: "First Connection", icon: "🌱" },
+            perfectGame: { unlocked: false, name: "Perfect Memory", icon: "🎯" },
+            speedRun: { unlocked: false, name: "Quick Thinker", icon: "⚡" },
+            patient: { unlocked: false, name: "Patient Mind", icon: "🧘" },
+            combo3: { unlocked: false, name: "Triple Match", icon: "🔥" },
+            calm: { unlocked: false, name: "Stress-Free", icon: "😌" }
+        };
+        
+        let cards = [];
+        let selected = [];
+        let matchedCount = 0;
+        let totalPairs = 0;
+        let moves = 0;
+        let timer = null;
+        let seconds = 0;
+        let isProcessing = false;
+        let isPaused = false;
+        let currentDifficulty = 'medium';
+        let stressLevel = 100; // 0 = stressed, 100 = calm
+        let consecutiveMatches = 0;
+        let perfectMatches = 0;
+        let totalAttempts = 0;
+
+        // Breathing cycle tracker
+        let breathCycle = 0;
+        setInterval(() => {
+            breathCycle++;
+            const phase = breathCycle % 12;
+            if (phase < 4) {
+                breathPhase.textContent = 'Breathe In';
+            } else if (phase < 6) {
+                breathPhase.textContent = 'Hold';
+            } else if (phase < 10) {
+                breathPhase.textContent = 'Breathe Out';
+            } else {
+                breathPhase.textContent = 'Hold';
+            }
+        }, 500);
+
+        // Audio Engine - Refined therapeutic sounds
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'flip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(550, audioCtx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.12);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+            } 
+            else if (type === 'match') {
+                // Harmonic match sound
+                [523.25, 659.25].forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    g.gain.setValueAtTime(0.07, audioCtx.currentTime);
+                    g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+                    o.start(); o.stop(audioCtx.currentTime + 0.5);
+                });
+            }
+            else if (type === 'victory') {
+                // Peaceful ascending arpeggio
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.15);
+                    g.gain.setValueAtTime(0.08, audioCtx.currentTime + i * 0.15);
+                    g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + i * 0.15 + 0.6);
+                    o.start(audioCtx.currentTime + i * 0.15);
+                    o.stop(audioCtx.currentTime + i * 0.15 + 0.6);
+                });
+            }
+        }
+
+        // Stress level management
+        function updateStressLevel(change) {
+            stressLevel = Math.max(0, Math.min(100, stressLevel + change));
+            stressBar.style.width = stressLevel + '%';
+            
+            if (stressLevel > 70) {
+                stressBar.className = 'stress-bar';
+                stressText.textContent = 'Calm';
+                stressText.style.color = '#2dd4bf';
+            } else if (stressLevel > 40) {
+                stressBar.className = 'stress-bar medium';
+                stressText.textContent = 'Focused';
+                stressText.style.color = '#fbbf24';
+            } else {
+                stressBar.className = 'stress-bar high';
+                stressText.textContent = 'Tense';
+                stressText.style.color = '#f87171';
+            }
+
+            // Achievement: Stay calm
+            if (stressLevel > 80 && matchedCount > totalPairs * 0.5) {
+                unlockAchievement('calm');
+            }
+        }
+
+        // Encouragement system
+        let lastEncouragementTime = 0;
+        const ENCOURAGEMENT_COOLDOWN = 6000;
+
+        function showEncouragement(message) {
+            const now = Date.now();
+            if (now - lastEncouragementTime < ENCOURAGEMENT_COOLDOWN) return;
+            
+            lastEncouragementTime = now;
+            encouragementEl.textContent = message;
+            encouragementEl.classList.add('show');
+            
+            setTimeout(() => {
+                encouragementEl.classList.remove('show');
+            }, 2500);
+        }
+
+        function getRandomEncouragement(category) {
+            const messages = encouragements[category];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        // Achievement system
+        function unlockAchievement(id) {
+            if (achievements[id] && !achievements[id].unlocked) {
+                achievements[id].unlocked = true;
+                
+                achievementText.innerHTML = `<strong>${achievements[id].name}</strong>`;
+                achievementToast.querySelector('.achievement-icon').textContent = achievements[id].icon;
+                achievementToast.classList.add('show');
+                
+                setTimeout(() => {
+                    achievementToast.classList.remove('show');
+                }, 3500);
+            }
+        }
+
+        // Combo system
+        function showCombo(count) {
+            if (count >= 3) {
+                comboDisplay.textContent = `${count}x Combo!`;
+                comboDisplay.classList.add('show');
+                
+                setTimeout(() => {
+                    comboDisplay.classList.remove('show');
+                }, 1500);
+
+                if (count >= 3 && !achievements.combo3.unlocked) {
+                    unlockAchievement('combo3');
+                }
+            }
+        }
+
+        // Floating particles
+        function createParticles() {
+            const container = document.getElementById('particleContainer');
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.setProperty('--drift', (Math.random() - 0.5) * 200 + 'px');
+                container.appendChild(particle);
+            }
+        }
+
+        // Timer functions
+        function formatTime(s) {
+            const mins = Math.floor(s / 60).toString().padStart(2, '0');
+            const secs = (s % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            seconds = 0;
+            timeEl.innerText = "00:00";
+            timer = setInterval(() => {
+                if (!isPaused) {
+                    seconds++;
+                    timeEl.innerText = formatTime(seconds);
+                    
+                    // Gradual stress increase over time (cognitive load)
+                    if (seconds % 10 === 0) {
+                        updateStressLevel(-2);
+                    }
+                }
+            }, 1000);
+        }
+
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.level === level) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            grid.className = `grid ${level}`;
+            restartGame();
+        }
+
+        function init() {
+            grid.innerHTML = '';
+            cards = [];
+            selected = [];
+            matchedCount = 0;
+            moves = 0;
+            consecutiveMatches = 0;
+            perfectMatches = 0;
+            totalAttempts = 0;
+            moveEl.innerText = '0';
+            matchEl.innerText = '0';
+            isProcessing = false;
+            isPaused = false;
+            stressLevel = 100;
+            updateStressLevel(0);
+            modal.classList.remove('visible');
+            pauseOverlay.classList.remove('visible');
+            pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+            
+            const emojis = emojiSets[currentDifficulty];
+            totalPairs = emojis.length / 2;
+            
+            const shuffled = [...emojis].sort(() => 0.5 - Math.random());
+
+            shuffled.forEach(emoji => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                
+                card.innerHTML = `
+                    <div class="face face-front">${emoji}</div>
+                    <div class="face face-back"></div>
+                `;
+
+                card.addEventListener('click', () => flip(card));
+                grid.appendChild(card);
+                cards.push(card);
+            });
+
+            startTimer();
+            
+            setTimeout(() => {
+                showEncouragement("Take a breath. No rush. Find your rhythm.");
+            }, 1200);
+        }
+
+        function flip(card) {
+            if (isPaused || isProcessing || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            playSound('flip');
+            card.classList.add('flipped');
+            selected.push(card);
+
+            if (selected.length === 2) {
+                isProcessing = true;
+                moves++;
+                totalAttempts++;
+                moveEl.innerText = moves;
+                setTimeout(check, 600);
+            }
+        }
+
+        function check() {
+            const [c1, c2] = selected;
+            const t1 = c1.querySelector('.face-front').innerText;
+            const t2 = c2.querySelector('.face-front').innerText;
+
+            if (t1 === t2) {
+                // Match found!
+                playSound('match');
+                c1.classList.add('matched');
+                c2.classList.add('matched');
+                matchedCount += 2;
+                perfectMatches++;
+                consecutiveMatches++;
+                
+                const matchesMade = matchedCount / 2;
+                matchEl.innerText = matchesMade;
+                
+                // Stress relief on match
+                updateStressLevel(8);
+                
+                // Show combo
+                showCombo(consecutiveMatches);
+                
+                // Milestone encouragements
+                if (matchesMade === 1) {
+                    showEncouragement(getRandomEncouragement('firstMatch'));
+                    unlockAchievement('firstMatch');
+                } else if (consecutiveMatches >= 2) {
+                    showEncouragement(getRandomEncouragement('combo'));
+                } else if (matchesMade === Math.floor(totalPairs / 2)) {
+                    showEncouragement(getRandomEncouragement('halfwayMatch'));
+                } else if (matchesMade === totalPairs - 1) {
+                    showEncouragement(getRandomEncouragement('almostDone'));
+                }
+                
+                if (matchedCount === emojiSets[currentDifficulty].length) {
+                    gameWin();
+                }
+            } else {
+                // No match
+                consecutiveMatches = 0;
+                c1.classList.add('shake');
+                c2.classList.add('shake');
+                
+                // Minor stress increase on mismatch
+                updateStressLevel(-5);
+                
+                setTimeout(() => {
+                    c1.classList.remove('flipped', 'shake');
+                    c2.classList.remove('flipped', 'shake');
+                }, 450);
+            }
+            
+            selected = [];
+            isProcessing = false;
+        }
+
+        function gameWin() {
+            clearInterval(timer);
+            playSound('victory');
+            
+            finalMoves.innerText = moves;
+            finalTime.innerText = formatTime(seconds);
+            
+            // Calculate accuracy
+            const accuracy = Math.round((perfectMatches / totalAttempts) * 100);
+            finalAccuracy.innerText = accuracy + '%';
+            
+            // Performance evaluation
+            const efficiency = moves / totalPairs;
+            let badge, message;
+            
+            if (efficiency <= 1.2 && accuracy >= 90) {
+                badge = "🏆 Master Focus";
+                message = encouragements.victory.excellent;
+                unlockAchievement('perfectGame');
+            } else if (efficiency <= 2.0 && accuracy >= 75) {
+                badge = "⭐ Great Focus";
+                message = encouragements.victory.good;
+            } else if (efficiency <= 3.0) {
+                badge = "🌟 Solid Practice";
+                message = encouragements.victory.moderate;
+            } else {
+                badge = "🌱 Learning Journey";
+                message = encouragements.victory.learning;
+            }
+
+            // Speed achievement
+            if (seconds < totalPairs * 3) {
+                unlockAchievement('speedRun');
+            }
+
+            // Patience achievement
+            if (seconds > totalPairs * 8 && accuracy > 70) {
+                unlockAchievement('patient');
+            }
+            
+            performanceBadge.textContent = badge;
+            document.getElementById('final-encouragement').textContent = message;
+            
+            setTimeout(() => {
+                modal.classList.add('visible');
+            }, 900);
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                pauseOverlay.classList.add('visible');
+                pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+            } else {
+                pauseOverlay.classList.remove('visible');
+                pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+            }
+        }
+
+        function restartGame() {
+            // Reset achievements for new game
+            Object.keys(achievements).forEach(key => {
+                if (key !== 'firstMatch') { // Keep first match unlocked
+                    achievements[key].unlocked = false;
+                }
+            });
+            init();
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === ' ') {
+                e.preventDefault();
+                togglePause();
+            } else if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                restartGame();
+            }
+        });
+
+        // Initialize
+        createParticles();
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapeutic Resonance Breathing | Clinical-Grade Stress Relief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            color: white; 
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Ambient Background Particles */
+        .particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: radial-gradient(circle, #6366f1, transparent);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* Main Container */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header with Stats */
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 10px;
+        }
+
+        .session-stats {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2dd4bf;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Technique Selector */
+        .technique-selector {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 40px;
+            display: flex;
+            gap: 5px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tech-opt {
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .tech-opt.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .tech-opt:hover:not(.active) {
+            color: white;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Orb Container */
+        .orb-container {
+            position: relative;
+            width: 380px;
+            height: 380px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        /* Breathing Guide Rings */
+        .guide-ring {
+            position: absolute;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50%;
+            animation: pulse-ring 4s ease-in-out infinite;
+        }
+
+        .guide-ring:nth-child(1) { width: 100%; height: 100%; animation-delay: 0s; }
+        .guide-ring:nth-child(2) { width: 90%; height: 90%; animation-delay: 0.5s; }
+        .guide-ring:nth-child(3) { width: 80%; height: 80%; animation-delay: 1s; }
+
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.05); }
+        }
+
+        /* Glowing Orb Layers */
+        .layer {
+            position: absolute;
+            border-radius: 50%;
+            transition: transform 0.1s linear, opacity 0.3s ease, filter 0.3s ease;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        .layer-1 {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #6366f1 0%, #8b5cf6 30%, transparent 70%);
+            opacity: 0.4;
+            filter: blur(30px);
+        }
+
+        .layer-2 {
+            width: 85%;
+            height: 85%;
+            background: radial-gradient(circle, #2dd4bf 0%, #06b6d4 40%, transparent 70%);
+            opacity: 0.5;
+            filter: blur(25px);
+        }
+
+        .layer-3 {
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, #a78bfa 0%, transparent 60%);
+            opacity: 0.3;
+            filter: blur(20px);
+        }
+
+        .layer-core {
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, white 0%, #e0e7ff 50%, transparent 70%);
+            opacity: 0.2;
+            filter: blur(15px);
+        }
+
+        /* Center Text Display */
+        .center-text {
+            position: absolute;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            text-shadow: 0 0 30px rgba(0,0,0,0.9);
+        }
+        
+        .instruction {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            color: #f8fafc;
+            transition: color 0.3s ease;
+        }
+        
+        .timer-number {
+            font-size: 4rem;
+            font-weight: 300;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .phase-subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        /* Progress Ring */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            pointer-events: none;
+        }
+
+        circle {
+            fill: none;
+            stroke: rgba(255,255,255,0.08);
+            stroke-width: 4;
+        }
+
+        #progress {
+            stroke: url(#gradient);
+            stroke-width: 6;
+            stroke-dasharray: 1131; /* 2*PI*180 */
+            stroke-dashoffset: 1131;
+            transition: stroke-dashoffset 0.1s linear;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px rgba(45, 212, 191, 0.6));
+        }
+
+        /* Heart Rate Visualization */
+        .biofeedback {
+            position: absolute;
+            bottom: -60px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .biofeedback.active { opacity: 1; }
+
+        .heart-icon {
+            color: #f87171;
+            font-size: 1.2rem;
+            animation: heartbeat 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+        }
+
+        .hrv-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #2dd4bf;
+        }
+
+        .hrv-label {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: transparent;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(15px);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            width: 320px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .settings-panel.open {
+            transform: translateX(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .settings-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-settings:hover {
+            color: white;
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .slider-container {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #6366f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-value {
+            text-align: right;
+            color: #2dd4bf;
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Checkbox styling */
+        input[type="checkbox"] {
+            accent-color: #6366f1;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Settings Button */
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Affirmations Display */
+        .affirmation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            padding: 20px 30px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 50;
+        }
+
+        .affirmation.show {
+            opacity: 1;
+        }
+
+        .affirmation-text {
+            font-size: 1.1rem;
+            color: #e0e7ff;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Progress Dots */
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #2dd4bf;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
+            transform: scale(1.2);
+        }
+
+        /* Completion Message */
+        .completion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .completion-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .completion-content {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .completion-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .completion-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #6366f1, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .completion-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .completion-stat {
+            text-align: center;
+        }
+
+        .completion-stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2dd4bf;
+        }
+
+        .completion-stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .orb-container {
+                width: 300px;
+                height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .session-stats {
+                width: 100%;
+            }
+
+            .technique-selector {
+                gap: 10px;
+            }
+            
+            .tech-opt {
+                flex: 1 1 40%;
+            }
+
+            .settings-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <button class="settings-btn" onclick="toggleSettings()" aria-label="Open Settings">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3 class="settings-title">Preferences</h3>
+            <button class="close-settings" onclick="toggleSettings()" aria-label="Close Settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">
+                Binaural Guidance
+                <input type="checkbox" id="audioToggle" checked onchange="updateSettings()">
+            </label>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">
+                Affirmations
+                <input type="checkbox" id="affirmationsToggle" checked onchange="updateSettings()">
+            </label>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">
+                HRV Biofeedback
+                <input type="checkbox" id="biofeedbackToggle" checked onchange="updateSettings()">
+            </label>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label" style="display: block; cursor: default;">Volume</label>
+            <div class="slider-container">
+                <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="updateVolume(this.value)">
+                <div class="slider-value" id="volumeValue">50%</div>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label" style="display: block; cursor: default;">Session Duration</label>
+            <div class="slider-container">
+                <input type="range" id="durationSlider" min="1" max="20" value="5" oninput="updateDuration(this.value)">
+                <div class="slider-value" id="durationValue">5 min</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="session-stats">
+                <div class="stat">
+                    <div class="stat-value" id="cyclesCompleted">0</div>
+                    <div class="stat-label">Cycles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="timeElapsed">0:00</div>
+                    <div class="stat-label">Time</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="calmScore">--</div>
+                    <div class="stat-label">Coherence</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="technique-selector">
+            <div class="tech-opt active" onclick="setMode('4-7-8')" data-mode="4-7-8">
+                <div>4-7-8</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Anxiety</div>
+            </div>
+            <div class="tech-opt" onclick="setMode('box')" data-mode="box">
+                <div>Box</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Focus</div>
+            </div>
+            <div class="tech-opt" onclick="setMode('coherence')" data-mode="coherence">
+                <div>Resonance</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Balance</div>
+            </div>
+            <div class="tech-opt" onclick="setMode('triangle')" data-mode="triangle">
+                <div>Triangle</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Energy</div>
+            </div>
+        </div>
+
+        <div class="orb-container">
+            <div class="guide-ring"></div>
+            <div class="guide-ring"></div>
+            <div class="guide-ring"></div>
+
+            <svg viewBox="0 0 380 380">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#2dd4bf;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="190" cy="190" r="180"></circle>
+                <circle cx="190" cy="190" r="180" id="progress"></circle>
+            </svg>
+
+            <div class="layer layer-1" id="l1"></div>
+            <div class="layer layer-2" id="l2"></div>
+            <div class="layer layer-3" id="l3"></div>
+            <div class="layer layer-core" id="l4"></div>
+
+            <div class="center-text">
+                <span class="instruction" id="status-text">Ready</span>
+                <span class="timer-number" id="timer-text">--</span>
+                <span class="phase-subtitle" id="subtitle-text">Sit comfortably</span>
+            </div>
+
+            <div class="biofeedback" id="biofeedback">
+                <i class="fas fa-heart heart-icon"></i>
+                <div>
+                    <div class="hrv-value" id="hrvValue">72</div>
+                    <div class="hrv-label">BPM</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-dots" id="progressDots"></div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn" onclick="toggleSession()">
+                <i class="fas fa-play"></i> Start Session
+            </button>
+            <button class="btn" onclick="resetSession()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <div class="affirmation" id="affirmation">
+        <div class="affirmation-text" id="affirmationText"></div>
+    </div>
+
+    <div class="completion-modal" id="completionModal">
+        <div class="completion-content">
+            <div class="completion-icon">🌟</div>
+            <h2 class="completion-title">Session Complete</h2>
+            <p style="color: #94a3b8; margin-bottom: 20px;">You've successfully reset your nervous system.</p>
+            
+            <div class="completion-stats">
+                <div class="completion-stat">
+                    <div class="completion-stat-value" id="finalCycles">0</div>
+                    <div class="completion-stat-label">Cycles</div>
+                </div>
+                <div class="completion-stat">
+                    <div class="completion-stat-value" id="finalTime">0:00</div>
+                    <div class="completion-stat-label">Duration</div>
+                </div>
+                <div class="completion-stat">
+                    <div class="completion-stat-value" id="finalCoherence">0</div>
+                    <div class="completion-stat-label">Coherence</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="closeCompletionModal()" style="margin-top: 20px;">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION & STATE
+        // ==========================================
+        
+        const CONFIG = {
+            maxVolume: 0.2,
+            particleCount: 30,
+            affirmationInterval: 30000,
+            hrvBaseline: 72,
+            ringRadius: 180, // Matched to new SVG radius
+        };
+
+        const STATE = {
+            isRunning: false,
+            mode: '4-7-8',
+            phases: [],
+            currentPhaseIndex: 0,
+            startTime: 0,
+            sessionStartTime: 0,
+            totalCycles: 0,
+            totalSessionTime: 0,
+            targetDuration: 5,
+            animationFrame: null,
+            lastAffirmationTime: 0,
+            settings: {
+                audio: true,
+                affirmations: true,
+                biofeedback: true,
+                volume: 0.5,
+            }
+        };
+
+        // ==========================================
+        // TECHNIQUES
+        // ==========================================
+        
+        const TECHNIQUES = {
+            '4-7-8': {
+                name: 'Dr. Weil\'s 4-7-8',
+                description: 'Natural tranquilizer for anxiety',
+                phases: [
+                    { name: "Inhale", duration: 4000, color: "#6366f1", scale: 1.5, instruction: "Inhale (Nose)", hrEffect: 8 },
+                    { name: "Hold", duration: 7000, color: "#a5b4fc", scale: 1.5, instruction: "Hold Breath", hrEffect: 0 },
+                    { name: "Exhale", duration: 8000, color: "#2dd4bf", scale: 1.0, instruction: "Exhale (Mouth)", hrEffect: -12 }
+                ]
+            },
+            'box': {
+                name: 'Box Breathing',
+                description: 'Navy SEAL focus technique',
+                phases: [
+                    { name: "Inhale", duration: 4000, color: "#6366f1", scale: 1.4, instruction: "Inhale", hrEffect: 6 },
+                    { name: "Hold", duration: 4000, color: "#a5b4fc", scale: 1.4, instruction: "Hold", hrEffect: 2 },
+                    { name: "Exhale", duration: 4000, color: "#2dd4bf", scale: 1.0, instruction: "Exhale", hrEffect: -8 },
+                    { name: "Hold", duration: 4000, color: "#64748b", scale: 1.0, instruction: "Hold Empty", hrEffect: -4 }
+                ]
+            },
+            'coherence': {
+                name: 'Resonant Breathing',
+                description: 'Heart rate variability training',
+                phases: [
+                    { name: "Inhale", duration: 5500, color: "#6366f1", scale: 1.4, instruction: "Breathe In", hrEffect: 5 },
+                    { name: "Exhale", duration: 5500, color: "#2dd4bf", scale: 1.0, instruction: "Breathe Out", hrEffect: -5 }
+                ]
+            },
+            'triangle': {
+                name: 'Triangle Breathing',
+                description: 'Balanced energy regulation',
+                phases: [
+                    { name: "Inhale", duration: 4000, color: "#6366f1", scale: 1.4, instruction: "Inhale", hrEffect: 6 },
+                    { name: "Hold", duration: 4000, color: "#a5b4fc", scale: 1.4, instruction: "Hold", hrEffect: 0 },
+                    { name: "Exhale", duration: 4000, color: "#2dd4bf", scale: 1.0, instruction: "Exhale", hrEffect: -8 }
+                ]
+            }
+        };
+
+        const AFFIRMATIONS = [
+            "I am safe, calm, and in control.",
+            "I release tension with every exhale.",
+            "My body heals itself in rest.",
+            "I am present in this moment.",
+            "Peace is my natural state.",
+            "I let go of what I cannot control.",
+            "Stillness brings me clarity.",
+            "My heart and mind are aligned.",
+        ];
+
+        // ==========================================
+        // DOM ELEMENTS
+        // ==========================================
+        
+        const DOM = {
+            statusEl: document.getElementById('status-text'),
+            timerEl: document.getElementById('timer-text'),
+            subtitleEl: document.getElementById('subtitle-text'),
+            layers: [
+                document.getElementById('l1'),
+                document.getElementById('l2'),
+                document.getElementById('l3'),
+                document.getElementById('l4')
+            ],
+            progressCircle: document.getElementById('progress'),
+            startBtn: document.getElementById('startBtn'),
+            cyclesEl: document.getElementById('cyclesCompleted'),
+            timeEl: document.getElementById('timeElapsed'),
+            calmScoreEl: document.getElementById('calmScore'),
+            biofeedbackEl: document.getElementById('biofeedback'),
+            hrvValueEl: document.getElementById('hrvValue'),
+            affirmationEl: document.getElementById('affirmation'),
+            affirmationTextEl: document.getElementById('affirmationText'),
+            progressDots: document.getElementById('progressDots'),
+            completionModal: document.getElementById('completionModal'),
+        };
+
+        // ==========================================
+        // AUDIO ENGINE
+        // ==========================================
+        
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.oscillators = [];
+                this.gainNode = null;
+                this.masterVolume = STATE.settings.volume;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+            }
+
+            resumeContext() {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            start() {
+                this.init();
+                this.resumeContext();
+
+                // Create oscillators
+                const leftOsc = this.ctx.createOscillator();
+                const rightOsc = this.ctx.createOscillator();
+                const leftGain = this.ctx.createGain();
+                const rightGain = this.ctx.createGain();
+                
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.value = 0;
+
+                const merger = this.ctx.createChannelMerger(2);
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 600;
+
+                leftOsc.type = 'sine';
+                rightOsc.type = 'sine';
+                
+                // Binaural: 432Hz base (Left) vs 436Hz (Right) = 4Hz Theta Entrainment
+                leftOsc.frequency.value = 432;
+                rightOsc.frequency.value = 436; 
+
+                leftOsc.connect(leftGain);
+                rightOsc.connect(rightGain);
+                leftGain.connect(merger, 0, 0);
+                rightGain.connect(merger, 0, 1);
+                merger.connect(filter);
+                filter.connect(this.gainNode);
+                this.gainNode.connect(this.ctx.destination);
+
+                leftOsc.start();
+                rightOsc.start();
+
+                this.oscillators = [leftOsc, rightOsc];
+            }
+
+            update(phase, progress) {
+                if (!this.gainNode || !this.ctx) return;
+                
+                const now = this.ctx.currentTime;
+                const targetVolume = CONFIG.maxVolume * this.masterVolume;
+
+                if (phase.name === "Inhale") {
+                    // Swell volume, slight pitch rise
+                    this.oscillators.forEach((osc, i) => {
+                        const baseFreq = i === 0 ? 432 : 436;
+                        osc.frequency.setTargetAtTime(baseFreq + 10, now, 0.5);
+                    });
+                    this.gainNode.gain.setTargetAtTime(targetVolume, now, 0.5);
+                    
+                } else if (phase.name === "Hold") {
+                    // Maintain volume
+                    this.gainNode.gain.setTargetAtTime(targetVolume * 0.8, now, 0.2);
+                    
+                } else { // Exhale
+                    // Decrease volume, pitch return
+                    this.oscillators.forEach((osc, i) => {
+                        const baseFreq = i === 0 ? 432 : 436;
+                        osc.frequency.setTargetAtTime(baseFreq, now, 0.8);
+                    });
+                    this.gainNode.gain.setTargetAtTime(targetVolume * 0.1, now, 0.8);
+                }
+            }
+
+            setVolume(volume) {
+                this.masterVolume = volume;
+            }
+
+            stop() {
+                if (this.gainNode) {
+                    const now = this.ctx.currentTime;
+                    this.gainNode.gain.setTargetAtTime(0, now, 0.5);
+                    setTimeout(() => {
+                        this.oscillators.forEach(osc => {
+                            try { osc.stop(); } catch(e) {}
+                        });
+                        this.oscillators = [];
+                    }, 600);
+                }
+            }
+        }
+
+        const audioEngine = new AudioEngine();
+
+        // ==========================================
+        // BIOFEEDBACK MOCK
+        // ==========================================
+        
+        class BiofeedbackSimulator {
+            constructor() {
+                this.baseHR = CONFIG.hrvBaseline;
+                this.currentHR = this.baseHR;
+                this.coherenceScore = 0;
+                this.variability = [];
+            }
+
+            update(phase, progress) {
+                const targetChange = phase.hrEffect || 0;
+                const target = this.baseHR + targetChange;
+                
+                // Interpolate heart rate based on breathing phase
+                this.currentHR += (target - this.currentHR) * 0.05;
+                // Add tiny organic jitter
+                this.currentHR += (Math.random() - 0.5) * 0.5;
+                
+                // Track HRV for coherence score
+                this.variability.push(Math.abs(this.currentHR - this.baseHR));
+                if (this.variability.length > 20) this.variability.shift();
+                
+                const avgVariability = this.variability.reduce((a, b) => a + b, 0) / this.variability.length;
+                this.coherenceScore = Math.min(100, Math.max(0, 100 - avgVariability * 4 + (STATE.totalCycles * 2)));
+                
+                return {
+                    hr: Math.round(this.currentHR),
+                    coherence: Math.round(this.coherenceScore)
+                };
+            }
+
+            reset() {
+                this.currentHR = this.baseHR;
+                this.variability = [];
+                this.coherenceScore = 0;
+            }
+        }
+
+        const biofeedback = new BiofeedbackSimulator();
+
+        // ==========================================
+        // CORE LOGIC
+        // ==========================================
+        
+        function initParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < CONFIG.particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (15 + Math.random() * 20) + 's';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function setMode(newMode) {
+            if (STATE.isRunning) return;
+            STATE.mode = newMode;
+            
+            document.querySelectorAll('.tech-opt').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-mode="${newMode}"]`).classList.add('active');
+            
+            const technique = TECHNIQUES[newMode];
+            DOM.subtitleEl.textContent = technique.description;
+            updateProgressDots();
+        }
+
+        function updateProgressDots() {
+            const technique = TECHNIQUES[STATE.mode];
+            DOM.progressDots.innerHTML = '';
+            technique.phases.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (index === 0) dot.classList.add('active');
+                DOM.progressDots.appendChild(dot);
+            });
+        }
+
+        function toggleSession() {
+            if (STATE.isRunning) {
+                endSession();
+            } else {
+                startSession();
+            }
+        }
+
+        function startSession() {
+            STATE.isRunning = true;
+            STATE.sessionStartTime = Date.now();
+            STATE.totalCycles = 0;
+            biofeedback.reset();
+            
+            // Audio check (Resume context on user interaction)
+            if (STATE.settings.audio) {
+                audioEngine.init();
+                audioEngine.resumeContext();
+            }
+
+            startCountdown();
+        }
+
+        function startCountdown() {
+            let count = 3;
+            DOM.statusEl.textContent = "Prepare";
+            DOM.timerEl.textContent = count;
+            DOM.startBtn.disabled = true;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    DOM.timerEl.textContent = count;
+                } else {
+                    clearInterval(interval);
+                    startBreathingLoop();
+                }
+            }, 1000);
+        }
+
+        function startBreathingLoop() {
+            STATE.phases = TECHNIQUES[STATE.mode].phases;
+            STATE.startTime = null;
+            STATE.currentPhaseIndex = 0;
+            STATE.lastAffirmationTime = Date.now();
+            
+            if (STATE.settings.audio) audioEngine.start();
+            if (STATE.settings.biofeedback) DOM.biofeedbackEl.classList.add('active');
+            
+            DOM.startBtn.innerHTML = '<i class="fas fa-stop"></i> End Session';
+            DOM.startBtn.disabled = false;
+            
+            STATE.animationFrame = requestAnimationFrame(breathingLoop);
+        }
+
+        function breathingLoop(timestamp) {
+            if (!STATE.isRunning) return;
+            if (!STATE.startTime) STATE.startTime = timestamp;
+
+            const elapsed = timestamp - STATE.startTime;
+            const currentPhase = STATE.phases[STATE.currentPhaseIndex];
+            
+            let progress = elapsed / currentPhase.duration;
+            let remainingSeconds = Math.ceil((currentPhase.duration - elapsed) / 1000);
+            
+            // Phase Transition
+            if (progress >= 1) {
+                STATE.currentPhaseIndex = (STATE.currentPhaseIndex + 1) % STATE.phases.length;
+                
+                // Cycle Complete
+                if (STATE.currentPhaseIndex === 0) {
+                    STATE.totalCycles++;
+                    updateStats();
+                    // Duration Check
+                    if ((Date.now() - STATE.sessionStartTime) / 1000 >= STATE.targetDuration * 60) {
+                        completeSession();
+                        return;
+                    }
+                }
+                
+                STATE.startTime = timestamp;
+                progress = 0;
+                updateProgressDotsActive();
+            }
+
+            // Updates
+            DOM.statusEl.textContent = currentPhase.name;
+            DOM.timerEl.textContent = remainingSeconds > 0 ? remainingSeconds : 0;
+            DOM.subtitleEl.textContent = currentPhase.instruction;
+
+            updateOrb(currentPhase, progress);
+            updateProgressRing(progress);
+            
+            if (STATE.settings.audio) audioEngine.update(currentPhase, progress);
+            
+            if (STATE.settings.biofeedback) {
+                const bio = biofeedback.update(currentPhase, progress);
+                DOM.hrvValueEl.textContent = bio.hr;
+                DOM.calmScoreEl.textContent = bio.coherence;
+            }
+
+            updateStats();
+            checkAffirmation();
+
+            STATE.animationFrame = requestAnimationFrame(breathingLoop);
+        }
+
+        function updateOrb(phase, progress) {
+            let scale;
+            // Smooth easing functions
+            if (phase.name === "Inhale") {
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                scale = 1.0 + (easeOut * (phase.scale - 1.0));
+            } else if (phase.name === "Exhale") {
+                const easeIn = Math.pow(progress, 2);
+                scale = phase.scale - (easeIn * (phase.scale - 1.0));
+            } else {
+                scale = phase.scale; // Hold steady
+            }
+
+            DOM.layers.forEach((layer, index) => {
+                const layerScale = scale * (1 - index * 0.05);
+                layer.style.transform = `scale(${layerScale})`;
+            });
+            DOM.layers[0].style.background = `radial-gradient(circle, ${phase.color} 0%, ${phase.color}88 40%, transparent 75%)`;
+        }
+
+        function updateProgressRing(progress) {
+            // Circumference of radius 180 = 2 * PI * 180 ≈ 1131
+            const totalLength = 1131; 
+            DOM.progressCircle.style.strokeDashoffset = totalLength - (progress * totalLength);
+        }
+
+        function updateProgressDotsActive() {
+            const dots = DOM.progressDots.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === STATE.currentPhaseIndex);
+            });
+        }
+
+        function updateStats() {
+            DOM.cyclesEl.textContent = STATE.totalCycles;
+            const elapsed = Math.floor((Date.now() - STATE.sessionStartTime) / 1000);
+            const m = Math.floor(elapsed / 60);
+            const s = elapsed % 60;
+            DOM.timeEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function checkAffirmation() {
+            if (STATE.settings.affirmations && (Date.now() - STATE.lastAffirmationTime > CONFIG.affirmationInterval)) {
+                const text = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+                DOM.affirmationTextEl.textContent = text;
+                DOM.affirmationEl.classList.add('show');
+                setTimeout(() => DOM.affirmationEl.classList.remove('show'), 6000);
+                STATE.lastAffirmationTime = Date.now();
+            }
+        }
+
+        function endSession() {
+            STATE.isRunning = false;
+            cancelAnimationFrame(STATE.animationFrame);
+            audioEngine.stop();
+            
+            DOM.startBtn.innerHTML = '<i class="fas fa-play"></i> Start Session';
+            DOM.startBtn.disabled = false;
+            DOM.statusEl.textContent = "Paused";
+            DOM.subtitleEl.textContent = "Take a deep breath";
+            DOM.timerEl.textContent = "--";
+            DOM.biofeedbackEl.classList.remove('active');
+            
+            // Visual Reset
+            DOM.layers.forEach(l => l.style.transform = "scale(1)");
+            DOM.progressCircle.style.strokeDashoffset = 1131;
+        }
+
+        function completeSession() {
+            endSession();
+            document.getElementById('finalCycles').textContent = STATE.totalCycles;
+            document.getElementById('finalTime').textContent = DOM.timeEl.textContent;
+            document.getElementById('finalCoherence').textContent = DOM.calmScoreEl.textContent;
+            DOM.completionModal.classList.add('show');
+        }
+
+        function closeCompletionModal() {
+            DOM.completionModal.classList.remove('show');
+            resetSession();
+        }
+
+        function resetSession() {
+            endSession();
+            STATE.totalCycles = 0;
+            STATE.sessionStartTime = Date.now(); // Reset logic time
+            DOM.cyclesEl.textContent = '0';
+            DOM.timeEl.textContent = '0:00';
+            DOM.calmScoreEl.textContent = '--';
+            DOM.statusEl.textContent = "Ready";
+            biofeedback.reset();
+        }
+
+        // ==========================================
+        // SETTINGS & UI
+        // ==========================================
+        
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('open');
+        }
+
+        function updateSettings() {
+            STATE.settings.audio = document.getElementById('audioToggle').checked;
+            STATE.settings.affirmations = document.getElementById('affirmationsToggle').checked;
+            STATE.settings.biofeedback = document.getElementById('biofeedbackToggle').checked;
+        }
+
+        function updateVolume(val) {
+            const vol = val / 100;
+            STATE.settings.volume = vol;
+            audioEngine.setVolume(vol);
+            document.getElementById('volumeValue').textContent = val + '%';
+        }
+
+        function updateDuration(val) {
+            STATE.targetDuration = parseInt(val);
+            document.getElementById('durationValue').textContent = val + ' min';
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            updateProgressDots();
+        });
+
+    </script>
+</body>
+</html>

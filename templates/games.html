@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Targeted Digital Therapeutics | MindFuel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+    <style>
+        .games-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem; padding: 0 5% 4rem; max-width: 1400px; margin: 0 auto;
+        }
+        .game-card {
+            background: var(--surface); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 350px; transition: 0.3s;
+        }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .tag { font-size: 0.75rem; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; display: inline-block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand"><i class="fa-solid fa-dna"></i> MindFuel</div>
+        <a href="/" class="nav-pill"><i class="fa-solid fa-house"></i> Dashboard</a>
+    </nav>
+
+    <div class="fade-in" style="text-align:center; padding: 8rem 2rem 4rem;">
+        <h1>Targeted Digital Therapeutics</h1>
+        <p style="color:var(--text-muted); font-size:1.1rem;">Scientifically calibrated digital interventions for every emotional state.</p>
+    </div>
+
+    <main class="games-grid fade-in delay-1">
+        
+        <div class="game-card" style="border-top: 4px solid #ef4444;">
+            <div>
+                <div class="icon-box" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i class="fa-solid fa-wind"></i></div>
+                <span class="tag" style="background:rgba(239,68,68,0.1); color:#ef4444;">High Anxiety</span>
+                <h3>Neural Flow</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Visual hypnosis. Interacting with fluid connections reduces cortisol by inducing flow state.</p>
+            </div>
+            <a href="/play/particle" class="btn-primary" style="background:#ef4444;">Activate Intervention</a>
+        </div>
+
+        <div class="game-card" style="border-top: 4px solid #2dd4bf;">
+            <div>
+                <div class="icon-box" style="background:rgba(45,212,191,0.1); color:#2dd4bf;"><i class="fa-solid fa-lungs"></i></div>
+                <span class="tag" style="background:rgba(45,212,191,0.1); color:#2dd4bf;">Panic Control</span>
+                <h3>Resonance</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Bio-feedback simulator. Sync your breath with the pulsating light to hack your vagus nerve.</p>
+            </div>
+            <a href="/play/breathing" class="btn-primary" style="background:#2dd4bf; color:#0f172a;">Activate Intervention</a>
+        </div>
+
+        <div class="game-card" style="border-top: 4px solid #f87171;">
+            <div>
+                <div class="icon-box" style="background:rgba(248,113,113,0.1); color:#f87171;"><i class="fa-solid fa-hammer"></i></div>
+                <span class="tag" style="background:rgba(248,113,113,0.1); color:#f87171;">Anger Release</span>
+                <h3>Gravity Shatter</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Safe kinetic release. Pick up heavy digital blocks and smash them using a physics engine.</p>
+            </div>
+            <a href="/play/shatter" class="btn-primary" style="background:#f87171;">Activate Intervention</a>
+        </div>
+
+        <div class="game-card" style="border-top: 4px solid #6366f1;">
+            <div>
+                <div class="icon-box" style="background:rgba(99,102,241,0.1); color:#6366f1;"><i class="fa-regular fa-circle-dot"></i></div>
+                <span class="tag" style="background:rgba(99,102,241,0.1); color:#6366f1;">Tension Release</span>
+                <h3>Bubble Pop</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Physical micro-interactions to release tension. Rhythmic popping provides dopamine feedback.</p>
+            </div>
+            <a href="/play/bubble" class="btn-primary" style="background:#6366f1;">Activate Intervention</a>
+        </div>
+
+        <div class="game-card" style="border-top: 4px solid #f472b6;">
+            <div>
+                <div class="icon-box" style="background:rgba(244,114,182,0.1); color:#f472b6;"><i class="fa-solid fa-pen-fancy"></i></div>
+                <span class="tag" style="background:rgba(244,114,182,0.1); color:#f472b6;">Art Therapy</span>
+                <h3>Zen Canvas</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Turn chaos into order. Simply draw lines to create complex, symmetrical mandalas.</p>
+            </div>
+            <a href="/play/mandala" class="btn-primary" style="background:#f472b6;">Activate Intervention</a>
+        </div>
+
+        <div class="game-card" style="border-top: 4px solid #10b981;">
+            <div>
+                <div class="icon-box" style="background:rgba(16,185,129,0.1); color:#10b981;"><i class="fa-solid fa-puzzle-piece"></i></div>
+                <span class="tag" style="background:rgba(16,185,129,0.1); color:#10b981;">Cognitive Focus</span>
+                <h3>Zen Memory</h3>
+                <p style="color:#94a3b8; font-size:0.9rem;">Gentle cognitive exercise. Matching patterns engages the prefrontal cortex to shift focus.</p>
+            </div>
+            <a href="/play/memory" class="btn-primary" style="background:#10b981;">Activate Intervention</a>
+        </div>
+
+    </main>
+</body>
+</html>

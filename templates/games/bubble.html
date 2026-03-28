@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapeutic Bubble Release | Clinical Stress Relief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #312e81 70%, #1e293b 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            overflow: hidden; 
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            33% { background-position: 50% 75%; }
+            66% { background-position: 100% 25%; }
+        }
+
+        /* Ambient Background Particles */
+        .ambient-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(147, 197, 253, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px);
+        }
+
+        .ambient-particle.shimmer {
+            animation: shimmerFloat 25s infinite ease-in-out;
+        }
+
+        @keyframes shimmerFloat {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 0.2; 
+            }
+            25% { 
+                transform: translate(60px, -80px) scale(1.3); 
+                opacity: 0.5; 
+            }
+            50% { 
+                transform: translate(-40px, -120px) scale(0.9); 
+                opacity: 0.3; 
+            }
+            75% { 
+                transform: translate(-80px, -60px) scale(1.1); 
+                opacity: 0.6; 
+            }
+        }
+
+        /* Subtle Stars Background */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.8; }
+        }
+
+        /* HUD - Therapeutic Dashboard */
+        .hud {
+            position: absolute;
+            top: 25px; 
+            left: 30px;
+            z-index: 100;
+            color: white;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.4);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 280px;
+        }
+        
+        .hud-title {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .score-big {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            align-self: flex-end;
+            padding-bottom: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2dd4bf;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* Enhanced Mood Meter with Gradient */
+        .mood-meter {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mood-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .mood-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mood-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2dd4bf;
+        }
+
+        .mood-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mood-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ef4444, #f59e0b, #10b981, #06b6d4);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.4);
+        }
+
+        /* Flow State Indicator */
+        .flow-indicator {
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .flow-indicator.active {
+            opacity: 1;
+        }
+
+        .flow-text {
+            font-size: 0.8rem;
+            color: #a5b4fc;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Milestone Tracker */
+        .milestone-tracker {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .milestone {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .milestone.achieved {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: #a78bfa;
+            color: white;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 6px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diff-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+        }
+
+        .diff-btn:hover {
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .diff-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Therapy Mode Selector */
+        .therapy-mode {
+            display: flex;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 6px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mode-btn {
+            padding: 10px 18px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+        }
+
+        .mode-btn:hover {
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #2dd4bf, #06b6d4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 212, 191, 0.3);
+        }
+
+        /* ENHANCED BUBBLE STYLING */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            transform-origin: center;
+            will-change: transform, top, left;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            
+            /* Realistic glass effect */
+            background: radial-gradient(
+                circle at 35% 35%,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(255, 255, 255, 0.7) 15%,
+                rgba(255, 255, 255, 0.3) 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            
+            box-shadow: 
+                inset -5px -5px 20px rgba(255, 255, 255, 0.4),
+                inset 10px 10px 30px rgba(255, 255, 255, 0.2),
+                0 8px 20px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.25);
+            
+            backdrop-filter: blur(3px);
+        }
+
+        .bubble:hover {
+            transform: scale(1.12);
+            filter: brightness(1.25);
+        }
+
+        .bubble:active {
+            transform: scale(0.95);
+        }
+
+        /* Specialty Bubbles */
+        .bubble.rainbow {
+            background: radial-gradient(
+                circle at 35% 35%,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(147, 197, 253, 0.4) 20%,
+                rgba(167, 139, 250, 0.4) 40%,
+                rgba(236, 72, 153, 0.3) 60%,
+                rgba(45, 212, 191, 0.2) 80%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            animation: rainbowPulse 2.5s infinite;
+            box-shadow: 
+                inset -5px -5px 20px rgba(255, 255, 255, 0.5),
+                inset 10px 10px 30px rgba(167, 139, 250, 0.3),
+                0 0 25px rgba(167, 139, 250, 0.4),
+                0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes rainbowPulse {
+            0%, 100% { 
+                box-shadow: 
+                    inset -5px -5px 20px rgba(255, 255, 255, 0.5),
+                    inset 10px 10px 30px rgba(167, 139, 250, 0.3),
+                    0 0 25px rgba(147, 197, 253, 0.5),
+                    0 8px 20px rgba(0, 0, 0, 0.15);
+            }
+            50% { 
+                box-shadow: 
+                    inset -5px -5px 20px rgba(255, 255, 255, 0.6),
+                    inset 10px 10px 30px rgba(236, 72, 153, 0.3),
+                    0 0 35px rgba(167, 139, 250, 0.7),
+                    0 8px 20px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        .bubble.golden {
+            background: radial-gradient(
+                circle at 35% 35%,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(251, 191, 36, 0.5) 20%,
+                rgba(245, 158, 11, 0.4) 40%,
+                rgba(217, 119, 6, 0.3) 60%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            box-shadow: 
+                inset -5px -5px 20px rgba(255, 255, 255, 0.5),
+                inset 10px 10px 30px rgba(251, 191, 36, 0.3),
+                0 0 30px rgba(251, 191, 36, 0.5),
+                0 8px 20px rgba(0, 0, 0, 0.15);
+            animation: goldenShimmer 3s infinite;
+        }
+
+        @keyframes goldenShimmer {
+            0%, 100% { filter: brightness(1.1) saturate(1.2); }
+            50% { filter: brightness(1.3) saturate(1.4); }
+        }
+
+        /* Enhanced shine effect */
+        .bubble::before {
+            content: ''; 
+            position: absolute;
+            top: 12%; 
+            left: 18%; 
+            width: 35%; 
+            height: 25%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 40%, transparent 70%);
+            filter: blur(2px);
+            transform: rotate(-35deg);
+        }
+
+        /* Secondary highlight */
+        .bubble::after {
+            content: ''; 
+            position: absolute;
+            bottom: 15%; 
+            right: 20%; 
+            width: 20%; 
+            height: 15%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            filter: blur(3px);
+        }
+
+        /* PARTICLE SYSTEM */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes particleFloat { 
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); 
+            } 
+        }
+
+        /* Sparkle particles for special bubbles */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            pointer-events: none;
+            animation: sparkleFloat 1s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0) rotate(180deg); }
+        }
+
+        /* FLOATING TEXT */
+        .float-text {
+            position: absolute;
+            color: #60a5fa;
+            font-weight: 700;
+            font-size: 1.6rem;
+            pointer-events: none;
+            animation: floatUp 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            text-shadow: 0 0 15px rgba(96, 165, 250, 0.6), 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+
+        .float-text.combo {
+            color: #a78bfa;
+            font-size: 2.2rem;
+            animation: floatUpBig 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            text-shadow: 0 0 20px rgba(167, 139, 250, 0.8), 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .float-text.golden {
+            color: #fbbf24;
+            font-size: 2.5rem;
+            animation: floatUpGolden 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            text-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes floatUp { 
+            0% { opacity: 1; transform: translateY(0) scale(0.8); } 
+            20% { opacity: 1; transform: translateY(-20px) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.2); } 
+        }
+
+        @keyframes floatUpBig { 
+            0% { opacity: 1; transform: translateY(0) scale(0.8); } 
+            20% { opacity: 1; transform: translateY(-25px) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.4); } 
+        }
+
+        @keyframes floatUpGolden { 
+            0% { opacity: 1; transform: translateY(0) scale(0.8) rotate(-5deg); } 
+            20% { opacity: 1; transform: translateY(-30px) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-140px) scale(1.5) rotate(5deg); } 
+        }
+
+        /* COMBO DISPLAY */
+        .combo-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: 700;
+            color: #a78bfa;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 
+                0 0 30px rgba(167, 139, 250, 1),
+                0 0 60px rgba(167, 139, 250, 0.5),
+                0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            white-space: nowrap;
+        }
+
+        .combo-display.show {
+            animation: comboFlash 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes comboFlash {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1.3) rotate(5deg); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.7) rotate(-5deg); 
+            }
+        }
+
+        /* THERAPEUTIC AFFIRMATIONS */
+        .affirmation {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #e0e7ff;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 85%;
+            z-index: 150;
+            font-weight: 400;
+            line-height: 1.6;
+            text-shadow: 
+                0 0 25px rgba(96, 165, 250, 0.6),
+                0 0 50px rgba(96, 165, 250, 0.3),
+                0 2px 15px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.6) 0%, transparent 70%);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .affirmation.show {
+            animation: affirmationFade 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes affirmationFade {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+        }
+
+        /* Achievement Notification */
+        .achievement {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            backdrop-filter: blur(15px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 150;
+            min-width: 280px;
+        }
+
+        .achievement.show {
+            transform: translateX(0);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .achievement-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute; 
+            bottom: 30px; 
+            left: 30px; 
+            z-index: 100;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            color: #94a3b8; 
+            text-decoration: none; 
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 12px 24px;
+            border-radius: 30px; 
+            transition: all 0.3s ease; 
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            pointer-events: auto;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover { 
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn.active {
+            background: rgba(96, 165, 250, 0.25);
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        /* Progress Toast */
+        .progress-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            color: #2dd4bf;
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 150;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hud {
+                top: 15px;
+                left: 15px;
+                padding: 15px;
+                min-width: 220px;
+            }
+
+            .score-big {
+                font-size: 2.5rem;
+            }
+
+            .top-controls {
+                top: 15px;
+                right: 15px;
+                flex-direction: column-reverse;
+            }
+
+            .difficulty-selector,
+            .therapy-mode {
+                flex-direction: column;
+            }
+
+            .controls {
+                bottom: 15px;
+                left: 15px;
+            }
+
+            .affirmation {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+
+            .combo-display {
+                font-size: 3.5rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    
+    <div class="stars" id="starsContainer"></div>
+    <div id="ambientContainer"></div>
+
+    
+    <div class="hud">
+        <div class="hud-title">Therapeutic Release</div>
+        <div class="score-display">
+            <div class="score-big" id="score">0</div>
+            <div class="score-label">points</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="timer">0:00</div>
+                <div class="stat-label">Session</div>
+            </div>
+        </div>
+
+        <div class="mood-meter">
+            <div class="mood-header">
+                <div class="mood-label">Inner Peace</div>
+                <div class="mood-value"><span id="moodPercent">0</span>%</div>
+            </div>
+            <div class="mood-bar">
+                <div class="mood-fill" id="moodFill"></div>
+            </div>
+        </div>
+
+        <div class="flow-indicator" id="flowIndicator">
+            <div class="flow-text">🌊 Flow State Active</div>
+        </div>
+
+        <div class="milestone-tracker" id="milestones"></div>
+    </div>
+
+    
+    <div class="top-controls">
+        <div class="therapy-mode">
+            <button class="mode-btn active" data-mode="mindful">
+                <i class="fas fa-spa"></i> Mindful
+            </button>
+            <button class="mode-btn" data-mode="active">
+                <i class="fas fa-fire"></i> Active
+            </button>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="diff-btn active" data-diff="calm">Calm</button>
+            <button class="diff-btn" data-diff="moderate">Moderate</button>
+            <button class="diff-btn" data-diff="energetic">Energetic</button>
+        </div>
+    </div>
+
+    
+    <div class="combo-display" id="comboDisplay"></div>
+
+    
+    <div class="affirmation" id="affirmation"></div>
+
+    
+    <div class="achievement" id="achievement">
+        <div class="achievement-icon" id="achievementIcon"></div>
+        <div class="achievement-title" id="achievementTitle"></div>
+        <div class="achievement-desc" id="achievementDesc"></div>
+    </div>
+
+    
+    <div class="progress-toast" id="progressToast"></div>
+
+    
+    <div class="controls">
+        <button class="btn active" id="soundBtn">
+            <i class="fa-solid fa-volume-high"></i>
+            <span>Sound</span>
+        </button>
+        <button class="btn" id="statsBtn">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Stats</span>
+        </button>
+        <button class="btn" id="resetBtn">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>New Session</span>
+        </button>
+    </div>
+
+    <script>
+        // ==========================================
+        // CORE CONFIGURATION
+        // ==========================================
+        
+        const CONFIG = {
+            // Therapeutic timing based on research
+            comboWindow: 900, // ms - optimal for maintaining flow state
+            affirmationInterval: 45000, // 45s - prevents habituation
+            flowStateThreshold: 10, // consecutive hits to enter flow
+            maxCalmLevel: 100,
+            calmDecayRate: 0.3, // per second
+            calmGainPerPop: 2.5,
+            
+            // Achievement milestones
+            milestones: [25, 50, 100, 250, 500],
+            
+            // Difficulty configurations (evidence-based)
+            difficulty: {
+                calm: {
+                    bubbleCount: 8,
+                    spawnInterval: 1500,
+                    speed: [0.3, 0.6],
+                    wobble: [0.5, 1.0],
+                    size: [55, 95],
+                    specialBubbleChance: 0.05
+                },
+                moderate: {
+                    bubbleCount: 12,
+                    spawnInterval: 1200,
+                    speed: [0.5, 0.9],
+                    wobble: [0.8, 1.5],
+                    size: [50, 85],
+                    specialBubbleChance: 0.08
+                },
+                energetic: {
+                    bubbleCount: 18,
+                    spawnInterval: 900,
+                    speed: [0.8, 1.3],
+                    wobble: [1.2, 2.0],
+                    size: [45, 75],
+                    specialBubbleChance: 0.12
+                }
+            },
+            
+            // Therapy mode configurations
+            therapyMode: {
+                mindful: {
+                    particleMultiplier: 1.5,
+                    affirmationFrequency: 1.0,
+                    colorScheme: 'cool'
+                },
+                active: {
+                    particleMultiplier: 2.5,
+                    affirmationFrequency: 0.6,
+                    colorScheme: 'vibrant'
+                }
+            }
+        };
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        
+        const STATE = {
+            score: 0,
+            streak: 0,
+            consecutiveHits: 0,
+            lastPopTime: 0,
+            sessionTime: 0,
+            calmLevel: 0,
+            totalBubblesPopped: 0,
+            
+            soundEnabled: true,
+            currentDifficulty: 'calm',
+            currentTherapyMode: 'mindful',
+            
+            inFlowState: false,
+            flowStateStartTime: 0,
+            
+            activeBubbles: [],
+            achievedMilestones: new Set(),
+            
+            lastAffirmationTime: 0,
+            sessionStartTime: Date.now(),
+            
+            spawnInterval: null,
+        };
+
+        // ==========================================
+        // DOM REFERENCES
+        // ==========================================
+        
+        const DOM = {
+            score: document.getElementById('score'),
+            streak: document.getElementById('streak'),
+            timer: document.getElementById('timer'),
+            moodFill: document.getElementById('moodFill'),
+            moodPercent: document.getElementById('moodPercent'),
+            flowIndicator: document.getElementById('flowIndicator'),
+            comboDisplay: document.getElementById('comboDisplay'),
+            affirmation: document.getElementById('affirmation'),
+            achievement: document.getElementById('achievement'),
+            progressToast: document.getElementById('progressToast'),
+            milestones: document.getElementById('milestones'),
+        };
+
+        // ==========================================
+        // THERAPEUTIC AFFIRMATIONS
+        // (Evidence-based CBT & mindfulness)
+        // ==========================================
+        
+        const AFFIRMATIONS = {
+            general: [
+                "You are releasing tension with each gentle touch",
+                "Every bubble represents a worry floating away",
+                "You are fully present in this moment of peace",
+                "Stress has no power over your inner calm",
+                "You are cultivating tranquility with each breath",
+                "Each pop is a conscious act of letting go",
+                "You deserve this moment of mindful release",
+                "Tension dissolves as you engage with intention",
+                "You are stronger than temporary stress",
+                "This practice nurtures your resilience",
+                "You are creating space for inner peace",
+                "Each moment brings renewed clarity"
+            ],
+            flow: [
+                "You've entered a state of peaceful flow",
+                "Your mind and body are in perfect harmony",
+                "This is the power of focused presence",
+                "You are experiencing therapeutic engagement"
+            ],
+            milestone: [
+                "Your dedication to wellness is admirable",
+                "Each milestone marks your commitment to self-care",
+                "You are investing in your mental well-being",
+                "Progress is happening with each mindful action"
+            ]
+        };
+
+        // ==========================================
+        // ACHIEVEMENTS SYSTEM
+        // ==========================================
+        
+        const ACHIEVEMENTS = {
+            firstPop: { icon: '🎯', title: 'First Release', desc: 'Your journey begins' },
+            streak10: { icon: '🔥', title: 'Building Momentum', desc: '10-streak achieved' },
+            streak25: { icon: '⚡', title: 'Flow Master', desc: '25-streak achieved' },
+            calm50: { icon: '🧘', title: 'Inner Peace', desc: '50% calm level reached' },
+            calm100: { icon: '✨', title: 'Perfect Serenity', desc: 'Maximum calm achieved' },
+            bubbles100: { icon: '💯', title: 'Century', desc: '100 bubbles released' },
+            bubbles500: { icon: '🌟', title: 'Therapeutic Dedication', desc: '500 bubbles released' },
+            session5min: { icon: '⏰', title: 'Mindful Practice', desc: '5 minutes of focus' },
+        };
+
+        // ==========================================
+        // AUDIO ENGINE
+        // ==========================================
+        
+        class TherapeuticAudioEngine {
+            constructor() {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.connect(this.ctx.destination);
+                this.masterGain.gain.value = 0.3;
+            }
+
+            resume() {
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            // Enhanced multi-layered pop sound
+            playPop(type = 'normal') {
+                if (!STATE.soundEnabled) return;
+                this.resume();
+                
+                const now = this.ctx.currentTime;
+                
+                if (type === 'golden') {
+                    this.playGoldenPop(now);
+                } else if (type === 'rainbow') {
+                    this.playRainbowPop(now);
+                } else {
+                    this.playNormalPop(now);
+                }
+            }
+
+            playNormalPop(now) {
+                // Fundamental frequency
+                const osc1 = this.ctx.createOscillator();
+                const gain1 = this.ctx.createGain();
+                
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(600 + Math.random() * 200, now);
+                osc1.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+                
+                gain1.gain.setValueAtTime(0.25, now);
+                gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                
+                // Harmonic layer
+                const osc2 = this.ctx.createOscillator();
+                const gain2 = this.ctx.createGain();
+                
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(300 + Math.random() * 100, now);
+                osc2.frequency.exponentialRampToValueAtTime(40, now + 0.15);
+                
+                gain2.gain.setValueAtTime(0.15, now);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                
+                // Noise burst for texture
+                const bufferSize = this.ctx.sampleRate * 0.1;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+                
+                const noise = this.ctx.createBufferSource();
+                const noiseGain = this.ctx.createGain();
+                const noiseFilter = this.ctx.createBiquadFilter();
+                
+                noise.buffer = buffer;
+                noiseFilter.type = 'highpass';
+                noiseFilter.frequency.value = 1000;
+                noiseGain.gain.setValueAtTime(0.08, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                
+                // Connect graph
+                osc1.connect(gain1).connect(this.masterGain);
+                osc2.connect(gain2).connect(this.masterGain);
+                noise.connect(noiseFilter).connect(noiseGain).connect(this.masterGain);
+                
+                // Play
+                osc1.start(now);
+                osc2.start(now);
+                noise.start(now);
+                
+                osc1.stop(now + 0.2);
+                osc2.stop(now + 0.16);
+            }
+
+            playRainbowPop(now) {
+                // Magical ascending tone
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+                
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                osc.connect(gain).connect(this.masterGain);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+
+            playGoldenPop(now) {
+                // Rich, rewarding tone cluster
+                const frequencies = [800, 1000, 1200, 1500];
+                
+                frequencies.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.25);
+                    
+                    const volume = 0.15 / (i + 1);
+                    gain.gain.setValueAtTime(volume, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    
+                    osc.connect(gain).connect(this.masterGain);
+                    osc.start(now + i * 0.02);
+                    osc.stop(now + 0.3);
+                });
+            }
+
+            playCombo() {
+                if (!STATE.soundEnabled) return;
+                this.resume();
+                
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(900, now);
+                osc.frequency.exponentialRampToValueAtTime(1400, now + 0.12);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                
+                osc.connect(gain).connect(this.masterGain);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            playAchievement() {
+                if (!STATE.soundEnabled) return;
+                this.resume();
+                
+                const now = this.ctx.currentTime;
+                
+                // Triumphant chord
+                const chord = [523.25, 659.25, 783.99]; // C major
+                
+                chord.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    
+                    osc.connect(gain).connect(this.masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.85);
+                });
+            }
+        }
+
+        const audioEngine = new TherapeuticAudioEngine();
+
+        // ==========================================
+        // PARTICLE EFFECTS
+        // ==========================================
+        
+        function createParticles(x, y, size, type = 'normal') {
+            const config = CONFIG.therapyMode[STATE.currentTherapyMode];
+            const baseCount = type === 'golden' ? 20 : type === 'rainbow' ? 16 : 12;
+            const particleCount = Math.floor(baseCount * config.particleMultiplier);
+            
+            const colors = {
+                normal: ['rgba(147, 197, 253, 0.9)', 'rgba(96, 165, 250, 0.8)'],
+                rainbow: ['rgba(147, 197, 253, 0.9)', 'rgba(167, 139, 250, 0.9)', 'rgba(236, 72, 153, 0.9)', 'rgba(45, 212, 191, 0.9)'],
+                golden: ['rgba(251, 191, 36, 0.95)', 'rgba(245, 158, 11, 0.9)', 'rgba(252, 211, 77, 0.85)']
+            };
+            
+            const palette = colors[type] || colors.normal;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = type === 'golden' ? 180 : type === 'rainbow' ? 150 : 120;
+                const spread = 1 + Math.random() * 0.5;
+                
+                const tx = Math.cos(angle) * velocity * spread;
+                const ty = Math.sin(angle) * velocity * spread;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.width = (Math.random() * 8 + 4) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.background = palette[Math.floor(Math.random() * palette.length)];
+                
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1200);
+            }
+            
+            // Add sparkles for special bubbles
+            if (type === 'rainbow' || type === 'golden') {
+                createSparkles(x, y, type === 'golden' ? 12 : 8);
+            }
+        }
+
+        function createSparkles(x, y, count) {
+            for (let i = 0; i < count; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                const angle = (Math.PI * 2 * i) / count;
+                const velocity = 100 + Math.random() * 50;
+                
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                sparkle.style.setProperty('--tx', tx + 'px');
+                sparkle.style.setProperty('--ty', ty + 'px');
+                sparkle.style.left = x + 'px';
+                sparkle.style.top = y + 'px';
+                
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+        }
+
+        // ==========================================
+        // UI UPDATES
+        // ==========================================
+        
+        function showFloatingText(x, y, points, type = 'normal') {
+            const el = document.createElement('div');
+            el.className = 'float-text';
+            
+            if (type === 'combo') {
+                el.classList.add('combo');
+                el.innerText = `${points}× COMBO!`;
+            } else if (type === 'golden') {
+                el.classList.add('golden');
+                el.innerText = `+${points} ⭐`;
+            } else {
+                el.innerText = `+${points}`;
+            }
+            
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1400);
+        }
+
+        function updateScore(points) {
+            STATE.score += points;
+            DOM.score.innerText = STATE.score;
+            
+            // Check for milestone achievements
+            CONFIG.milestones.forEach(milestone => {
+                if (STATE.score >= milestone && !STATE.achievedMilestones.has(milestone)) {
+                    STATE.achievedMilestones.add(milestone);
+                    showAchievement('milestone', milestone);
+                    updateMilestoneDisplay();
+                }
+            });
+        }
+
+        function updateStreak() {
+            DOM.streak.innerText = STATE.streak;
+            
+            // Flow state detection
+            if (STATE.consecutiveHits >= CONFIG.flowStateThreshold && !STATE.inFlowState) {
+                enterFlowState();
+            }
+            
+            // Streak achievements
+            if (STATE.streak === 10 && !STATE.achievedMilestones.has('streak10')) {
+                STATE.achievedMilestones.add('streak10');
+                showAchievement('streak10');
+            }
+            
+            if (STATE.streak === 25 && !STATE.achievedMilestones.has('streak25')) {
+                STATE.achievedMilestones.add('streak25');
+                showAchievement('streak25');
+            }
+        }
+
+        function updateCalmLevel(amount) {
+            STATE.calmLevel = Math.min(CONFIG.maxCalmLevel, STATE.calmLevel + amount);
+            const percentage = Math.round(STATE.calmLevel);
+            
+            DOM.moodFill.style.width = percentage + '%';
+            DOM.moodPercent.innerText = percentage;
+            
+            // Calm level achievements
+            if (percentage >= 50 && !STATE.achievedMilestones.has('calm50')) {
+                STATE.achievedMilestones.add('calm50');
+                showAchievement('calm50');
+            }
+            
+            if (percentage >= 100 && !STATE.achievedMilestones.has('calm100')) {
+                STATE.achievedMilestones.add('calm100');
+                showAchievement('calm100');
+            }
+        }
+
+        function checkCombo() {
+            const now = Date.now();
+            const timeDiff = now - STATE.lastPopTime;
+            
+            if (timeDiff < CONFIG.comboWindow) {
+                STATE.streak++;
+                STATE.consecutiveHits++;
+                
+                if (STATE.streak >= 5 && STATE.streak % 5 === 0) {
+                    showComboIndicator(STATE.streak);
+                    audioEngine.playCombo();
+                }
+            } else {
+                if (STATE.streak > 0 && STATE.inFlowState) {
+                    exitFlowState();
+                }
+                STATE.streak = 0;
+                STATE.consecutiveHits = 0;
+            }
+            
+            STATE.lastPopTime = now;
+            updateStreak();
+        }
+
+        function showComboIndicator(combo) {
+            DOM.comboDisplay.innerText = `${combo}× COMBO!`;
+            DOM.comboDisplay.classList.remove('show');
+            void DOM.comboDisplay.offsetWidth; // Force reflow
+            DOM.comboDisplay.classList.add('show');
+            
+            setTimeout(() => {
+                DOM.comboDisplay.classList.remove('show');
+            }, 1200);
+        }
+
+        function enterFlowState() {
+            STATE.inFlowState = true;
+            STATE.flowStateStartTime = Date.now();
+            DOM.flowIndicator.classList.add('active');
+            
+            showAffirmation(AFFIRMATIONS.flow[Math.floor(Math.random() * AFFIRMATIONS.flow.length)]);
+        }
+
+        function exitFlowState() {
+            STATE.inFlowState = false;
+            DOM.flowIndicator.classList.remove('active');
+        }
+
+        function showAffirmation(text = null) {
+            if (!text) {
+                text = AFFIRMATIONS.general[Math.floor(Math.random() * AFFIRMATIONS.general.length)];
+            }
+            
+            DOM.affirmation.innerText = text;
+            DOM.affirmation.classList.remove('show');
+            void DOM.affirmation.offsetWidth;
+            DOM.affirmation.classList.add('show');
+            
+            setTimeout(() => {
+                DOM.affirmation.classList.remove('show');
+            }, 5000);
+        }
+
+        function showAchievement(type, value = null) {
+            const achievement = ACHIEVEMENTS[type] || {
+                icon: '🎉',
+                title: type === 'milestone' ? `${value} Points!` : 'Achievement',
+                desc: type === 'milestone' ? AFFIRMATIONS.milestone[Math.floor(Math.random() * AFFIRMATIONS.milestone.length)] : 'Great work!'
+            };
+            
+            DOM.achievement.querySelector('#achievementIcon').innerText = achievement.icon;
+            DOM.achievement.querySelector('#achievementTitle').innerText = achievement.title;
+            DOM.achievement.querySelector('#achievementDesc').innerText = achievement.desc;
+            
+            DOM.achievement.classList.remove('show');
+            void DOM.achievement.offsetWidth;
+            DOM.achievement.classList.add('show');
+            
+            audioEngine.playAchievement();
+            
+            setTimeout(() => {
+                DOM.achievement.classList.remove('show');
+            }, 4000);
+        }
+
+        function updateMilestoneDisplay() {
+            DOM.milestones.innerHTML = '';
+            
+            CONFIG.milestones.forEach(milestone => {
+                const el = document.createElement('div');
+                el.className = 'milestone';
+                if (STATE.achievedMilestones.has(milestone)) {
+                    el.classList.add('achieved');
+                    el.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    el.innerText = milestone;
+                }
+                DOM.milestones.appendChild(el);
+            });
+        }
+
+        // ==========================================
+        // BUBBLE SYSTEM
+        // ==========================================
+        
+        function createBubble() {
+            const diffConfig = CONFIG.difficulty[STATE.currentDifficulty];
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            // Determine bubble type
+            const rand = Math.random();
+            let bubbleType = 'normal';
+            let pointValue = 1;
+            
+            if (STATE.streak >= 20 && rand < 0.15) {
+                bubbleType = 'golden';
+                bubble.classList.add('golden');
+                pointValue = 10;
+            } else if (STATE.streak >= 10 && rand < 0.10) {
+                bubbleType = 'rainbow';
+                bubble.classList.add('rainbow');
+                pointValue = 5;
+            }
+            
+            // Size
+            const size = Math.random() * (diffConfig.size[1] - diffConfig.size[0]) + diffConfig.size[0];
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            
+            // Position
+            const startX = Math.random() * (window.innerWidth - size);
+            bubble.style.left = startX + 'px';
+            bubble.style.top = window.innerHeight + size + 'px';
+
+            // Movement parameters
+            const speed = Math.random() * (diffConfig.speed[1] - diffConfig.speed[0]) + diffConfig.speed[0];
+            const wobbleSpeed = Math.random() * (diffConfig.wobble[1] - diffConfig.wobble[0]) + diffConfig.wobble[0];
+            const wobbleAmount = Math.random() * 40 + 20;
+            
+            let time = 0;
+            let popped = false;
+
+            document.body.appendChild(bubble);
+
+            const bubbleData = {
+                element: bubble,
+                type: bubbleType,
+                points: pointValue,
+                interval: setInterval(() => {
+                    if (popped) return;
+                    
+                    let top = parseFloat(bubble.style.top);
+                    
+                    // Remove if off-screen
+                    if (top <= -size * 2) {
+                        clearInterval(bubbleData.interval);
+                        if (!popped) bubble.remove();
+                        const index = STATE.activeBubbles.indexOf(bubbleData);
+                        if (index > -1) STATE.activeBubbles.splice(index, 1);
+                        
+                        // Spawn replacement
+                        if (STATE.activeBubbles.length < diffConfig.bubbleCount) {
+                            setTimeout(createBubble, diffConfig.spawnInterval);
+                        }
+                    } else {
+                        // Move up
+                        let newTop = top - speed;
+                        bubble.style.top = newTop + 'px';
+                        
+                        // Wobble
+                        time += 0.04;
+                        let offsetX = Math.sin(time * wobbleSpeed) * wobbleAmount;
+                        let currentLeft = parseFloat(bubble.style.left);
+                        bubble.style.left = Math.max(0, Math.min(window.innerWidth - size, currentLeft + offsetX * 0.3)) + 'px';
+                    }
+                }, 16)
+            };
+
+            STATE.activeBubbles.push(bubbleData);
+
+            // Interaction
+            const popBubble = (e) => {
+                if (popped) return;
+                popped = true;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                checkCombo();
+                
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX) || window.innerWidth / 2;
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY) || window.innerHeight / 2;
+                
+                const isCombo = STATE.streak >= 5 && STATE.streak % 5 === 0;
+                const finalPoints = isCombo ? bubbleType.points * STATE.streak : bubbleData.points;
+                
+                // Audio
+                audioEngine.playPop(bubbleType);
+                
+                // Visual effects
+                createParticles(clientX, clientY, size, bubbleType);
+                showFloatingText(clientX, clientY, finalPoints, isCombo ? 'combo' : bubbleType);
+                
+                // Update state
+                updateScore(finalPoints);
+                updateCalmLevel(CONFIG.calmGainPerPop);
+                STATE.totalBubblesPopped++;
+                
+                // Check bubble count achievements
+                if (STATE.totalBubblesPopped === 1 && !STATE.achievedMilestones.has('firstPop')) {
+                    STATE.achievedMilestones.add('firstPop');
+                    showAchievement('firstPop');
+                }
+                
+                if (STATE.totalBubblesPopped === 100 && !STATE.achievedMilestones.has('bubbles100')) {
+                    STATE.achievedMilestones.add('bubbles100');
+                    showAchievement('bubbles100');
+                }
+                
+                if (STATE.totalBubblesPopped === 500 && !STATE.achievedMilestones.has('bubbles500')) {
+                    STATE.achievedMilestones.add('bubbles500');
+                    showAchievement('bubbles500');
+                }
+                
+                // Remove bubble
+                clearInterval(bubbleData.interval);
+                bubble.style.transition = 'transform 0.2s, opacity 0.2s';
+                bubble.style.transform = 'scale(0)';
+                bubble.style.opacity = '0';
+                
+                setTimeout(() => {
+                    bubble.remove();
+                    const index = STATE.activeBubbles.indexOf(bubbleData);
+                    if (index > -1) STATE.activeBubbles.splice(index, 1);
+                }, 200);
+                
+                // Spawn replacement
+                if (STATE.activeBubbles.length < diffConfig.bubbleCount) {
+                    setTimeout(createBubble, diffConfig.spawnInterval);
+                }
+            };
+
+            bubble.addEventListener('mousedown', popBubble);
+            bubble.addEventListener('touchstart', popBubble, { passive: false });
+        }
+
+        // ==========================================
+        // BACKGROUND EFFECTS
+        // ==========================================
+        
+        function createAmbientParticles() {
+            const container = document.getElementById('ambientContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'ambient-particle shimmer';
+                particle.style.width = Math.random() * 120 + 60 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 2) + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // ==========================================
+        // GAME LOOP & TIMING
+        // ==========================================
+        
+        function startBubbleSpawning() {
+            const diffConfig = CONFIG.difficulty[STATE.currentDifficulty];
+            
+            // Initial spawn
+            for (let i = 0; i < diffConfig.bubbleCount; i++) {
+                setTimeout(() => createBubble(), i * 200);
+            }
+        }
+
+        function updateTimer() {
+            STATE.sessionTime++;
+            const mins = Math.floor(STATE.sessionTime / 60);
+            const secs = STATE.sessionTime % 60;
+            DOM.timer.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            // Time-based achievements
+            if (STATE.sessionTime === 300 && !STATE.achievedMilestones.has('session5min')) {
+                STATE.achievedMilestones.add('session5min');
+                showAchievement('session5min');
+            }
+        }
+
+        function updateCalmDecay() {
+            STATE.calmLevel = Math.max(0, STATE.calmLevel - CONFIG.calmDecayRate);
+            const percentage = Math.round(STATE.calmLevel);
+            DOM.moodFill.style.width = percentage + '%';
+            DOM.moodPercent.innerText = percentage;
+        }
+
+        function checkAffirmationTiming() {
+            const timeSinceLastAffirmation = Date.now() - STATE.lastAffirmationTime;
+            const affirmationConfig = CONFIG.therapyMode[STATE.currentTherapyMode];
+            const interval = CONFIG.affirmationInterval * affirmationConfig.affirmationFrequency;
+            
+            if (timeSinceLastAffirmation >= interval) {
+                showAffirmation();
+                STATE.lastAffirmationTime = Date.now();
+            }
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+        
+        // Difficulty selector
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                STATE.currentDifficulty = e.target.dataset.diff;
+                
+                // Clear existing bubbles
+                STATE.activeBubbles.forEach(b => {
+                    clearInterval(b.interval);
+                    b.element.remove();
+                });
+                STATE.activeBubbles.length = 0;
+                
+                // Restart with new difficulty
+                startBubbleSpawning();
+            });
+        });
+
+        // Therapy mode selector
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                STATE.currentTherapyMode = e.target.dataset.mode;
+            });
+        });
+
+        // Sound toggle
+        document.getElementById('soundBtn').addEventListener('click', (e) => {
+            STATE.soundEnabled = !STATE.soundEnabled;
+            e.currentTarget.classList.toggle('active');
+            
+            const icon = e.currentTarget.querySelector('i');
+            icon.className = STATE.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        });
+
+        // Reset session
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('Start a new session? Current progress will be reset.')) {
+                location.reload();
+            }
+        });
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        function init() {
+            createAmbientParticles();
+            createStars();
+            updateMilestoneDisplay();
+            startBubbleSpawning();
+            
+            STATE.lastAffirmationTime = Date.now();
+            
+            // Show welcome affirmation
+            setTimeout(() => {
+                showAffirmation("Welcome to your mindful release practice");
+            }, 2000);
+            
+            // Start timers
+            setInterval(updateTimer, 1000);
+            setInterval(updateCalmDecay, 1000);
+            setInterval(checkAffirmationTiming, 5000);
+        }
+
+        // Start on load
+        window.addEventListener('load', init);
+
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', (e) => {
+            if (STATE.sessionTime > 60) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+    </script>
+</body>
+</html>

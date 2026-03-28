@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Therapeutic Zen Canvas | Advanced Neuro-Stress Relief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: #030712;
+            height: 100vh;
+            overflow: hidden; 
+            font-family: 'Outfit', sans-serif;
+            cursor: none;
+            transition: background 3s ease;
+        }
+
+        body.calming { background: #0a0f1e; }
+        body.energizing { background: #1a0f0a; }
+        body.healing { background: #0a1a0f; }
+
+        canvas { 
+            display: block; 
+            position: absolute; 
+            top: 0; left: 0; 
+            z-index: 1;
+            filter: contrast(1.05) brightness(1.02);
+        }
+
+        /* --- FIXED: EMDR / Bilateral Stimulation Background --- */
+        /* Changed z-index to 2 to appear ABOVE the canvas */
+        .bilateral-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; 
+            pointer-events: none; /* Allows clicking through */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            mix-blend-mode: screen; /* Blends nicely with drawing */
+        }
+
+        .bilateral-bg.active {
+            opacity: 1; /* Fully visible container, children handle opacity */
+        }
+
+        .bilateral-left, .bilateral-right {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            transition: background 0.6s ease;
+            opacity: 0.15; /* Subtle flash intensity */
+        }
+
+        .bilateral-left { left: 0; }
+        .bilateral-right { right: 0; }
+
+        /* Custom Cursor with Breathe Indicator */
+        .cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #f472b6;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transition: transform 0.1s ease, border-color 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #f472b6;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .cursor.active { border-color: #a78bfa; transform: translate(-50%, -50%) scale(1.5); }
+        .cursor.active::before { background: #a78bfa; box-shadow: 0 0 20px #a78bfa; }
+        .cursor.flow { border-color: #2dd4bf; animation: pulse 1s infinite; }
+        .cursor.breathe { animation: breathePulse 4s infinite ease-in-out; }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.7; }
+        }
+
+        @keyframes breathePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.8); }
+        }
+
+        /* Ambient Particles */
+        .ambient-particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(var(--dx), var(--dy)); }
+        }
+
+        /* HUD */
+        .hud {
+            position: absolute; 
+            top: 30px; 
+            left: 30px; 
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hud.hidden { opacity: 0; }
+
+        h1 {
+            font-size: 1.8rem; 
+            letter-spacing: 2px; 
+            margin-bottom: 8px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f472b6, #a78bfa, #2dd4bf);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 6s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle { 
+            font-size: 0.95rem; 
+            color: #94a3b8; 
+            max-width: 350px; 
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        /* Stress Insight Panel */
+        .insight-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+            max-width: 220px;
+            transition: opacity 0.5s ease;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .insight-panel.hidden { opacity: 0; pointer-events: none; }
+
+        .panel-section {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .panel-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .panel-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .stress-emoji {
+            font-size: 1.4rem;
+            transition: all 0.5s ease;
+        }
+
+        .stress-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .metric {
+            text-align: center;
+            background: rgba(255,255,255,0.02);
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .metric-label {
+            font-size: 0.6rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f472b6, #a78bfa);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        /* Therapy Mode Selector */
+        .therapy-modes {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .therapy-mode {
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #94a3b8;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        .therapy-mode:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .therapy-mode.active {
+            background: linear-gradient(135deg, #f472b6, #a78bfa);
+            border-color: transparent;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10;
+            display: flex; 
+            gap: 15px;
+            background: rgba(255,255,255,0.05); 
+            padding: 15px 25px;
+            border-radius: 50px; 
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(15px);
+            transition: opacity 0.5s ease;
+        }
+
+        .controls.hidden { opacity: 0; pointer-events: none; }
+
+        .btn {
+            background: none; 
+            border: none; 
+            color: #cbd5e1;
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            padding: 10px;
+            border-radius: 50%; 
+            transition: all 0.3s ease;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            position: relative;
+        }
+
+        .btn:hover { 
+            background: rgba(255,255,255,0.15); 
+            transform: scale(1.15); 
+            color: #f472b6; 
+        }
+
+        .btn:active { transform: scale(0.95); }
+        
+        .color-dot {
+            width: 28px; 
+            height: 28px; 
+            border-radius: 50%; 
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.2); 
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .color-dot.active { 
+            transform: scale(1.4); 
+            border-color: white; 
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .symmetry-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.08);
+            padding: 8px 15px;
+            border-radius: 30px;
+        }
+
+        .symmetry-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+        }
+
+        .symmetry-btn:hover { color: #f472b6; transform: scale(1.2); }
+
+        .symmetry-value {
+            font-size: 0.9rem;
+            color: #a78bfa;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .divider {
+            width: 1px; 
+            height: 35px; 
+            background: rgba(255,255,255,0.2); 
+            margin: 0 5px;
+        }
+
+        /* Feature Toggles */
+        .feature-toggles {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: fadeInRight 0.8s ease;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.04);
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateX(-2px);
+        }
+
+        .toggle-btn.active {
+            background: rgba(45, 212, 191, 0.15);
+            border-color: #2dd4bf;
+            color: #2dd4bf;
+        }
+
+        .toggle-btn i {
+            font-size: 0.85rem;
+        }
+
+        /* Affirmations */
+        .affirmation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            font-size: 1.4rem;
+            color: rgba(167, 139, 250, 0);
+            text-align: center;
+            max-width: 700px;
+            font-weight: 300;
+            transition: all 1s ease;
+            pointer-events: none;
+            line-height: 1.6;
+        }
+
+        .affirmation.show { color: rgba(167, 139, 250, 0.7); }
+
+        /* Particle Trail */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            animation: fadeOut 1.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: scale(0) translateY(-30px); }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #030712 0%, #0f172a 100%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease;
+            padding: 40px;
+        }
+
+        .welcome-screen.hidden { opacity: 0; pointer-events: none; }
+
+        .welcome-title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #f472b6, #a78bfa, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #f472b6, #a78bfa);
+            border: none;
+            color: white;
+            padding: 18px 50px;
+            border-radius: 35px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(244, 114, 182, 0.4);
+        }
+
+        /* Sound Wave Visualizer */
+        .sound-visualizer {
+            position: absolute;
+            bottom: 100px;
+            left: 30px;
+            z-index: 10;
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 60px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .sound-visualizer.active { opacity: 1; }
+
+        .sound-bar {
+            width: 4px;
+            background: linear-gradient(to top, #f472b6, #a78bfa);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        /* Cognitive Reframe Popup */
+        .reframe-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            z-index: 200;
+            background: rgba(15, 23, 42, 0.96);
+            padding: 25px 30px;
+            border-radius: 18px;
+            border: 2px solid rgba(167, 139, 250, 0.25);
+            backdrop-filter: blur(20px);
+            max-width: 420px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .reframe-popup.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: all;
+        }
+
+        .reframe-title {
+            font-size: 1.1rem;
+            color: #a78bfa;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .reframe-text {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .reframe-btn {
+            background: linear-gradient(135deg, #f472b6, #a78bfa);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .reframe-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(244, 114, 182, 0.3);
+        }
+
+        /* Achievement Notifications */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            right: 30px;
+            z-index: 150;
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.85), rgba(167, 139, 250, 0.85));
+            padding: 12px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 250px;
+        }
+
+        .achievement.show {
+            top: 100px;
+        }
+
+        .achievement-icon {
+            font-size: 1.5rem;
+        }
+
+        .achievement-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        /* --- FIXED: Guided Path Overlay --- */
+        .guided-path {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .guided-path.active { opacity: 0.6; } /* Increased opacity for visibility */
+
+        .path-circle {
+            position: absolute;
+            border: 2px dashed rgba(45, 212, 191, 0.5); /* Increased visibility */
+            border-radius: 50%;
+            transform: translate(-50%, -50%); /* Center it properly */
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cursor"></div>
+
+    <div class="bilateral-bg" id="bilateralBg">
+        <div class="bilateral-left"></div>
+        <div class="bilateral-right"></div>
+    </div>
+
+    <div class="guided-path" id="guidedPath"></div>
+
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="welcome-title">THERAPEUTIC ZEN CANVAS</h1>
+        <p class="welcome-subtitle">Advanced Neuroscience-Based Stress Relief</p>
+        <p class="welcome-text">
+            This experience combines evidence-based psychological techniques including 
+            bilateral stimulation (EMDR), progressive flow states, color therapy, 
+            biofeedback simulation, and cognitive reframing to help reduce anxiety and promote deep relaxation.
+        </p>
+        <button class="start-btn" onclick="startExperience()">Begin Your Journey</button>
+    </div>
+
+    <div class="hud" id="hud">
+        <h1>ZEN CANVAS</h1>
+        <p class="subtitle">Neural pathway activation through creative symmetry</p>
+    </div>
+
+    <div class="therapy-modes">
+        <button class="therapy-mode active" onclick="setTherapyMode('balance')">⚖️ Balance</button>
+        <button class="therapy-mode" onclick="setTherapyMode('calm')">🌊 Calm</button>
+        <button class="therapy-mode" onclick="setTherapyMode('energy')">⚡ Energy</button>
+        <button class="therapy-mode" onclick="setTherapyMode('heal')">💚 Heal</button>
+    </div>
+
+    <div class="insight-panel" id="insightPanel">
+        <div class="panel-section">
+            <div class="panel-label">Current State</div>
+            <div class="stress-indicator">
+                <div class="stress-emoji" id="stressEmoji">😌</div>
+                <div class="stress-text" id="stressText">Relaxed</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="calmProgress"></div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-label">Session Metrics</div>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-value" id="timeValue">0:00</div>
+                    <div class="metric-label">Duration</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="strokeValue">0</div>
+                    <div class="metric-label">Strokes</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="flowValue">0%</div>
+                    <div class="metric-label">Flow</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="coherenceValue">0%</div>
+                    <div class="metric-label">Coherence</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-label">Pattern Analysis</div>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-value" id="smoothValue">--</div>
+                    <div class="metric-label">Fluidity</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="rhythmValue">--</div>
+                    <div class="metric-label">Rhythm</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas1"></canvas>
+
+    <div class="affirmation" id="affirmation"></div>
+
+    <div class="sound-visualizer" id="soundVisualizer">
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+    </div>
+
+    <div class="feature-toggles">
+        <div class="toggle-btn" id="zenToggle" onclick="toggleZenMode()">
+            <i class="fa-solid fa-eye-slash"></i>
+            <span>Zen Mode</span>
+        </div>
+        <div class="toggle-btn" id="bilateralToggle" onclick="toggleBilateral()">
+            <i class="fa-solid fa-wave-square"></i>
+            <span>EMDR Mode</span>
+        </div>
+        <div class="toggle-btn" id="soundToggle" onclick="toggleSound()">
+            <i class="fa-solid fa-volume-high"></i>
+            <span>Sound Therapy</span>
+        </div>
+        <div class="toggle-btn" id="guidedToggle" onclick="toggleGuided()">
+            <i class="fa-solid fa-route"></i>
+            <span>Guided Path</span>
+        </div>
+    </div>
+
+    <div class="controls" id="controls">
+        <div class="color-dot active" style="background:#f472b6;" onclick="setColor('#f472b6', this)" data-therapy="emotional"></div>
+        <div class="color-dot" style="background:#2dd4bf;" onclick="setColor('#2dd4bf', this)" data-therapy="calming"></div>
+        <div class="color-dot" style="background:#fbbf24;" onclick="setColor('#fbbf24', this)" data-therapy="energizing"></div>
+        <div class="color-dot" style="background:#a78bfa;" onclick="setColor('#a78bfa', this)" data-therapy="spiritual"></div>
+        <div class="color-dot" style="background:#60a5fa;" onclick="setColor('#60a5fa', this)" data-therapy="peaceful"></div>
+        <div class="color-dot" style="background:#34d399;" onclick="setColor('#34d399', this)" data-therapy="healing"></div>
+        <div class="color-dot" style="background:#f97316;" onclick="setColor('#f97316', this)" data-therapy="creative"></div>
+        
+        <div class="divider"></div>
+
+        <div class="symmetry-control">
+            <button class="symmetry-btn" onclick="changeSymmetry(-1)"><i class="fa-solid fa-minus"></i></button>
+            <div class="symmetry-value" id="symmetryValue">12</div>
+            <button class="symmetry-btn" onclick="changeSymmetry(1)"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="btn" onclick="toggleBrushSize()" title="Brush Size"><i class="fa-solid fa-pen-nib" id="brushIcon"></i></button>
+        <button class="btn" onclick="clearCanvas()" title="Clear"><i class="fa-solid fa-eraser"></i></button>
+        <button class="btn" onclick="undoStroke()" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="btn" onclick="downloadArt()" title="Save"><i class="fa-solid fa-download"></i></button>
+    </div>
+
+    <div class="achievement" id="achievement">
+        <div class="achievement-icon">🌟</div>
+        <div class="achievement-text" id="achievementText"></div>
+    </div>
+
+    <div class="reframe-popup" id="reframePopup">
+        <div class="reframe-title" id="reframeTitle"></div>
+        <div class="reframe-text" id="reframeText"></div>
+        <button class="reframe-btn" onclick="closeReframe()">Continue</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas1');
+        const ctx = canvas.getContext('2d');
+        
+        // Core Settings
+        let drawing = false;
+        let symmetry = 12;
+        let angleStep = (Math.PI * 2) / symmetry;
+        let color = '#f472b6';
+        let brushSize = 3;
+        let brushSizes = [2, 3, 5, 7, 10];
+        let currentBrushIndex = 1;
+
+        // Advanced State Tracking
+        let flowLevel = 0;
+        let strokeCount = 0;
+        let continuousStrokes = 0;
+        let sessionStartTime = Date.now();
+        let lastStrokeTime = Date.now();
+        let zenMode = false;
+        let bilateralMode = false;
+        let soundMode = false;
+        let guidedMode = false;
+        let currentTherapyMode = 'balance';
+
+        // Biofeedback Simulation
+        let heartRateVariability = 50; // Simulated HRV
+        let coherenceScore = 0;
+        let stressLevel = 50; // 0-100
+        let calmLevel = 50;
+
+        // Pattern Analysis
+        let strokeHistory = [];
+        let velocityData = [];
+        let smoothnessScore = 0;
+        let rhythmScore = 0;
+
+        // Achievement System
+        let achievements = {
+            firstStroke: false,
+            flow30: false,
+            flow60: false,
+            flow100: false,
+            strokes100: false,
+            strokes500: false,
+            session5min: false,
+            session10min: false,
+            zenMaster: false
+        };
+
+        // Cognitive Reframing
+        const reframes = [
+            {
+                trigger: 'rapid_strokes',
+                title: 'Notice Your Energy',
+                text: 'Your quick movements suggest heightened energy. This is natural. Try slowing down intentionally and notice how your mind follows your hand.'
+            },
+            {
+                trigger: 'erratic_pattern',
+                title: 'Embracing Chaos',
+                text: 'Random patterns are not mistakes - they are expressions of your current state. Chaos can be beautiful. Let it guide you to order.'
+            },
+            {
+                trigger: 'long_pause',
+                title: 'Stillness is Valuable',
+                text: 'You paused. This moment of reflection is just as important as action. Stillness allows integration.'
+            },
+            {
+                trigger: 'high_stress',
+                title: 'Tension Recognition',
+                text: 'Your patterns suggest tension. Acknowledge it without judgment. This canvas is your safe space to release.'
+            }
+        ];
+
+        // Therapeutic Affirmations (CBT & DBT based)
+        const affirmations = {
+            general: [
+                "You are creating exactly what you need right now",
+                "Each stroke is a step toward calm",
+                "Your mind and body are synchronizing",
+                "There is no wrong way to express yourself here",
+                "You are releasing what no longer serves you",
+                "This moment is yours alone",
+                "You are worthy of peace and stillness",
+                "Creativity is your birthright",
+                "You are safe to explore and create"
+            ],
+            calm: [
+                "Your breath is your anchor",
+                "Calm flows through every movement",
+                "You are finding your center",
+                "Peace is your natural state",
+                "Stillness lives within you"
+            ],
+            energy: [
+                "Your vitality is returning",
+                "Energy flows where attention goes",
+                "You are awakening your inner strength",
+                "Power and gentleness can coexist"
+            ],
+            heal: [
+                "You are healing with every breath",
+                "Your body knows how to restore itself",
+                "Healing is not linear, and that's okay",
+                "You are becoming whole again"
+            ]
+        };
+
+        let lastAffirmationTime = 0;
+        let lastReframeTime = 0;
+
+        // Audio Context (for sound therapy)
+        let audioContext = null;
+        let oscillators = [];
+        let gainNode = null;
+
+        // Bilateral Stimulation Timer
+        let bilateralInterval = null;
+        let bilateralState = 'left';
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        let mouseX = 0, mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Canvas Setup
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.fillStyle = '#030712';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (guidedMode) createGuidedPath();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Ambient Particles
+        function createAmbientParticles() {
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'ambient-particle';
+                particle.style.width = (Math.random() * 2 + 1) + 'px'; 
+                particle.style.height = particle.style.width;
+                particle.style.background = color;
+                particle.style.left = Math.random() * window.innerWidth + 'px';
+                particle.style.top = Math.random() * window.innerHeight + 'px';
+                
+                const dx = (Math.random() - 0.5) * 80;
+                const dy = (Math.random() - 0.5) * 80;
+                particle.style.setProperty('--dx', dx + 'px');
+                particle.style.setProperty('--dy', dy + 'px');
+                particle.style.animation = `float ${6 + Math.random() * 12}s ease-in-out infinite`;
+                
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Mouse Tracking
+        let pX = 0, pY = 0;
+        let strokeStartTime = 0;
+        let currentStrokePoints = [];
+
+        function startPosition(e) {
+            const pos = getPosition(e);
+            drawing = true;
+            pX = pos.x;
+            pY = pos.y;
+            strokeStartTime = Date.now();
+            currentStrokePoints = [{x: pX, y: pY, time: strokeStartTime}];
+            cursor.classList.add('active');
+            lastStrokeTime = Date.now();
+
+            if (!achievements.firstStroke) {
+                unlockAchievement('firstStroke', 'First Stroke! 🎨', 'Your journey begins');
+            }
+        }
+
+        function endPosition() {
+            drawing = false;
+            ctx.beginPath();
+            cursor.classList.remove('active');
+            
+            if (currentStrokePoints.length > 2) {
+                analyzeStroke();
+                strokeHistory.push({
+                    points: currentStrokePoints,
+                    duration: Date.now() - strokeStartTime,
+                    color: color,
+                    symmetry: symmetry
+                });
+                
+                if (strokeHistory.length > 50) strokeHistory.shift();
+            }
+            
+            continuousStrokes = 0;
+            currentStrokePoints = [];
+        }
+
+        function getPosition(e) {
+            if (e.touches) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+
+            const pos = getPosition(e);
+            const x = pos.x;
+            const y = pos.y;
+            
+            currentStrokePoints.push({x, y, time: Date.now()});
+            
+            const cX = canvas.width / 2;
+            const cY = canvas.height / 2;
+
+            // Distance-based dynamics
+            const dx = x - cX;
+            const dy = y - cY;
+            const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = Math.sqrt(cX * cX + cY * cY);
+            const normalizedDistance = distanceFromCenter / maxDistance;
+
+            // Velocity calculation
+            const velocity = Math.sqrt(Math.pow(x - pX, 2) + Math.pow(y - pY, 2));
+            velocityData.push(velocity);
+            if (velocityData.length > 100) velocityData.shift();
+
+            // Dynamic effects
+            const opacity = 0.6 + (normalizedDistance * 0.4);
+            const glowIntensity = 15 + (flowLevel / 5) + (velocity / 2);
+
+            ctx.save();
+            ctx.translate(cX, cY);
+
+            // Draw symmetrical patterns
+            for (let i = 0; i < symmetry; i++) {
+                ctx.rotate(angleStep);
+                
+                ctx.beginPath();
+                ctx.moveTo(pX - cX, pY - cY);
+                ctx.lineTo(x - cX, y - cY);
+                
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = opacity;
+                ctx.lineWidth = brushSize * (1 + velocity / 50);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.shadowBlur = glowIntensity;
+                ctx.shadowColor = color;
+                
+                ctx.stroke();
+
+                // Mirror effect
+                ctx.save();
+                ctx.scale(1, -1);
+                ctx.beginPath();
+                ctx.moveTo(pX - cX, pY - cY);
+                ctx.lineTo(x - cX, y - cY);
+                ctx.stroke();
+                ctx.restore();
+            }
+            
+            ctx.restore();
+
+            // Visual feedback
+            if (Math.random() > 0.6) createParticle(x, y, velocity);
+
+            // Update systems
+            updateFlowState(velocity);
+            updateBiofeedback(velocity, normalizedDistance);
+            strokeCount++;
+            continuousStrokes++;
+            
+            // Check achievements
+            checkAchievements();
+
+            pX = x;
+            pY = y;
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('touchstart', startPosition);
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw);
+
+        // Advanced Flow State
+        function updateFlowState(velocity) {
+            const now = Date.now();
+            const timeSinceLastStroke = now - lastStrokeTime;
+            
+            const optimalVelocity = velocity > 5 && velocity < 30;
+            
+            if (timeSinceLastStroke < 100 && continuousStrokes > 10 && optimalVelocity) {
+                flowLevel = Math.min(100, flowLevel + 0.8);
+            } else if (timeSinceLastStroke > 2000) {
+                flowLevel = Math.max(0, flowLevel - 0.5);
+            } else if (velocity > 50) {
+                flowLevel = Math.max(0, flowLevel - 0.3);
+            }
+
+            updateFlowUI();
+        }
+
+        function updateFlowUI() {
+            const flowBar = document.getElementById('flowValue');
+            flowBar.textContent = Math.round(flowLevel) + '%';
+            
+            if (flowLevel < 20) {
+                cursor.classList.remove('flow');
+                cursor.classList.remove('breathe');
+            } else if (flowLevel < 40) {
+                cursor.classList.remove('breathe');
+            } else if (flowLevel < 70) {
+                cursor.classList.add('flow');
+            } else {
+                cursor.classList.add('flow');
+                cursor.classList.add('breathe');
+            }
+        }
+
+        // Biofeedback Simulation
+        function updateBiofeedback(velocity, distanceFromCenter) {
+            const velocityStress = Math.min(30, velocity);
+            const centeringBonus = (1 - distanceFromCenter) * 10;
+            const flowBonus = flowLevel / 10;
+            
+            stressLevel = Math.max(0, Math.min(100, 
+                stressLevel - 0.1 + (velocityStress / 50) - (centeringBonus / 50) - (flowBonus / 100)
+            ));
+            
+            calmLevel = 100 - stressLevel;
+            coherenceScore = Math.min(100, (flowLevel + calmLevel) / 2);
+            
+            document.getElementById('calmProgress').style.width = calmLevel + '%';
+            document.getElementById('coherenceValue').textContent = Math.round(coherenceScore) + '%';
+            
+            updateStressIndicator();
+            
+            const now = Date.now();
+            if (stressLevel > 70 && now - lastReframeTime > 30000) {
+                triggerReframe('high_stress');
+            }
+        }
+
+        function updateStressIndicator() {
+            const emoji = document.getElementById('stressEmoji');
+            const text = document.getElementById('stressText');
+            
+            if (calmLevel < 30) {
+                emoji.textContent = '😰';
+                text.textContent = 'Tense';
+            } else if (calmLevel < 50) {
+                emoji.textContent = '😐';
+                text.textContent = 'Neutral';
+            } else if (calmLevel < 70) {
+                emoji.textContent = '😌';
+                text.textContent = 'Relaxed';
+            } else if (calmLevel < 90) {
+                emoji.textContent = '😊';
+                text.textContent = 'Calm';
+            } else {
+                emoji.textContent = '🧘';
+                text.textContent = 'Zenith';
+            }
+        }
+
+        // Stroke Analysis
+        function analyzeStroke() {
+            if (currentStrokePoints.length < 3) return;
+            
+            let totalAngleChange = 0;
+            for (let i = 1; i < currentStrokePoints.length - 1; i++) {
+                const p1 = currentStrokePoints[i - 1];
+                const p2 = currentStrokePoints[i];
+                const p3 = currentStrokePoints[i + 1];
+                
+                const angle1 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                const angle2 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
+                totalAngleChange += Math.abs(angle2 - angle1);
+            }
+            
+            smoothnessScore = Math.max(0, 100 - (totalAngleChange * 10));
+            
+            const avgVelocity = velocityData.reduce((a, b) => a + b, 0) / velocityData.length;
+            const velocityVariance = velocityData.reduce((sum, v) => sum + Math.pow(v - avgVelocity, 2), 0) / velocityData.length;
+            rhythmScore = Math.max(0, 100 - velocityVariance);
+            
+            document.getElementById('smoothValue').textContent = smoothnessScore > 70 ? '✓' : smoothnessScore > 40 ? '~' : '✗';
+            document.getElementById('rhythmValue').textContent = rhythmScore > 70 ? '✓' : rhythmScore > 40 ? '~' : '✗';
+            
+            const now = Date.now();
+            if (now - lastReframeTime > 45000) {
+                if (avgVelocity > 40) {
+                    triggerReframe('rapid_strokes');
+                } else if (smoothnessScore < 30) {
+                    triggerReframe('erratic_pattern');
+                }
+            }
+        }
+
+        // Particle System
+        function createParticle(x, y, velocity) {
+            if (Math.random() > 0.75) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                const size = Math.max(2, Math.min(6, velocity / 6));
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.background = color;
+                particle.style.opacity = '0.5';
+                particle.style.boxShadow = `0 0 ${size * 1.5}px ${color}`;
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 1500);
+            }
+        }
+
+        // Affirmation System
+        function showAffirmation(mode = null) {
+            const affirmationEl = document.getElementById('affirmation');
+            const pool = mode && affirmations[mode] ? affirmations[mode] : affirmations.general;
+            const randomAffirmation = pool[Math.floor(Math.random() * pool.length)];
+            
+            affirmationEl.textContent = randomAffirmation;
+            affirmationEl.classList.add('show');
+            
+            setTimeout(() => affirmationEl.classList.remove('show'), 5000);
+        }
+
+        // Cognitive Reframing System
+        function triggerReframe(trigger) {
+            const reframe = reframes.find(r => r.trigger === trigger);
+            if (!reframe) return;
+            
+            lastReframeTime = Date.now();
+            
+            const popup = document.getElementById('reframePopup');
+            document.getElementById('reframeTitle').textContent = reframe.title;
+            document.getElementById('reframeText').textContent = reframe.text;
+            
+            popup.classList.add('show');
+        }
+
+        function closeReframe() {
+            document.getElementById('reframePopup').classList.remove('show');
+        }
+
+        // Achievement System
+        function checkAchievements() {
+            if (!achievements.strokes100 && strokeCount >= 100) {
+                unlockAchievement('strokes100', '100 Strokes! 💯', 'Your dedication shows');
+            }
+            if (!achievements.strokes500 && strokeCount >= 500) {
+                unlockAchievement('strokes500', '500 Strokes! 🎯', 'Mastery in progress');
+            }
+            if (!achievements.flow30 && flowLevel >= 30 && flowLevel < 60) {
+                unlockAchievement('flow30', 'Finding Flow 🌊', 'You are entering the zone');
+            }
+            if (!achievements.flow60 && flowLevel >= 60 && flowLevel < 100) {
+                unlockAchievement('flow60', 'Deep Flow 🌀', 'Peak performance state');
+            }
+            if (!achievements.flow100 && flowLevel >= 100) {
+                unlockAchievement('flow100', 'Perfect Flow 🌟', 'Complete immersion achieved');
+            }
+        }
+
+        function unlockAchievement(id, title, subtitle) {
+            achievements[id] = true;
+            
+            const achievement = document.getElementById('achievement');
+            const text = document.getElementById('achievementText');
+            
+            text.innerHTML = `<strong>${title}</strong><br><small>${subtitle}</small>`;
+            achievement.classList.add('show');
+            
+            setTimeout(() => achievement.classList.remove('show'), 4000);
+        }
+
+        // Timer
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timeValue').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('strokeValue').textContent = strokeCount;
+            
+            if (!achievements.session5min && elapsed >= 300) {
+                unlockAchievement('session5min', '5 Minutes 🕐', 'Commitment recognized');
+            }
+            if (!achievements.session10min && elapsed >= 600) {
+                unlockAchievement('session10min', '10 Minutes ⏰', 'Deep practice achieved');
+            }
+        }, 1000);
+
+        // Therapy Mode Settings
+        function setTherapyMode(mode) {
+            currentTherapyMode = mode;
+            
+            document.querySelectorAll('.therapy-mode').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const modes = {
+                balance: { bg: '#030712', colors: ['#f472b6', '#a78bfa', '#2dd4bf'] },
+                calm: { bg: '#0a0f1e', colors: ['#60a5fa', '#2dd4bf', '#a78bfa'] },
+                energy: { bg: '#1a0f0a', colors: ['#fbbf24', '#fb7185', '#f472b6'] },
+                heal: { bg: '#0a1a0f', colors: ['#34d399', '#2dd4bf', '#a78bfa'] }
+            };
+            
+            document.body.style.background = modes[mode].bg;
+            
+            showAffirmation(mode);
+        }
+
+        // Controls
+        function setColor(c, element) {
+            color = c;
+            document.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            
+            const therapy = element.dataset.therapy;
+            const therapyMessages = {
+                emotional: 'Pink: Love, compassion, emotional healing',
+                calming: 'Teal: Tranquility, balance, mental clarity',
+                energizing: 'Yellow: Vitality, optimism, mental stimulation',
+                spiritual: 'Purple: Wisdom, meditation, higher consciousness',
+                peaceful: 'Blue: Peace, trust, deep communication',
+                healing: 'Green: Growth, renewal, natural harmony',
+                creative: 'Orange: Creativity, enthusiasm, adventurous spirit'
+            };
+            
+            if (therapy && therapyMessages[therapy]) {
+                const affirmationEl = document.getElementById('affirmation');
+                affirmationEl.textContent = therapyMessages[therapy];
+                affirmationEl.classList.add('show');
+                setTimeout(() => affirmationEl.classList.remove('show'), 3000);
+            }
+        }
+
+        function changeSymmetry(delta) {
+            symmetry = Math.max(3, Math.min(24, symmetry + delta));
+            angleStep = (Math.PI * 2) / symmetry;
+            document.getElementById('symmetryValue').textContent = symmetry;
+            
+            const affirmationEl = document.getElementById('affirmation');
+            affirmationEl.textContent = `${symmetry}-fold symmetry`;
+            affirmationEl.classList.add('show');
+            setTimeout(() => affirmationEl.classList.remove('show'), 1500);
+            
+            if (guidedMode) createGuidedPath();
+        }
+
+        function toggleBrushSize() {
+            currentBrushIndex = (currentBrushIndex + 1) % brushSizes.length;
+            brushSize = brushSizes[currentBrushIndex];
+            
+            const icon = document.getElementById('brushIcon');
+            icon.style.fontSize = (1 + currentBrushIndex * 0.12) + 'rem';
+            
+            const affirmationEl = document.getElementById('affirmation');
+            const sizeNames = ['Fine', 'Small', 'Medium', 'Large', 'Bold'];
+            affirmationEl.textContent = `Brush: ${sizeNames[currentBrushIndex]}`;
+            affirmationEl.classList.add('show');
+            setTimeout(() => affirmationEl.classList.remove('show'), 1500);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.97)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            setTimeout(() => {
+                ctx.fillStyle = '#030712';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                flowLevel = Math.max(0, flowLevel - 30);
+                strokeHistory = [];
+            }, 180);
+        }
+
+        function undoStroke() {
+            if (strokeHistory.length === 0) return;
+            
+            strokeHistory.pop();
+            
+            ctx.fillStyle = '#030712';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            strokeHistory.forEach(stroke => {
+                redrawStroke(stroke);
+            });
+            
+            strokeCount = Math.max(0, strokeCount - 1);
+        }
+
+        function redrawStroke(stroke) {
+            const cX = canvas.width / 2;
+            const cY = canvas.height / 2;
+            
+            ctx.save();
+            ctx.translate(cX, cY);
+            
+            const oldAngleStep = (Math.PI * 2) / stroke.symmetry;
+            
+            for (let i = 0; i < stroke.symmetry; i++) {
+                ctx.rotate(oldAngleStep);
+                
+                ctx.beginPath();
+                stroke.points.forEach((point, idx) => {
+                    if (idx === 0) {
+                        ctx.moveTo(point.x - cX, point.y - cY);
+                    } else {
+                        ctx.lineTo(point.x - cX, point.y - cY);
+                    }
+                });
+                
+                ctx.strokeStyle = stroke.color;
+                ctx.lineWidth = brushSize;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = stroke.color;
+                ctx.stroke();
+                
+                ctx.save();
+                ctx.scale(1, -1);
+                ctx.beginPath();
+                stroke.points.forEach((point, idx) => {
+                    if (idx === 0) {
+                        ctx.moveTo(point.x - cX, point.y - cY);
+                    } else {
+                        ctx.lineTo(point.x - cX, point.y - cY);
+                    }
+                });
+                ctx.stroke();
+                ctx.restore();
+            }
+            
+            ctx.restore();
+        }
+
+        function downloadArt() {
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `zen-therapy-${timestamp}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+            
+            showAffirmation();
+            unlockAchievement('download', 'Art Saved 📸', 'Your creation is preserved');
+        }
+
+        // Feature Toggles
+        function toggleZenMode() {
+            zenMode = !zenMode;
+            const toggle = document.getElementById('zenToggle');
+            const hud = document.getElementById('hud');
+            const panel = document.getElementById('insightPanel');
+            const controls = document.getElementById('controls');
+            
+            if (zenMode) {
+                toggle.classList.add('active');
+                hud.classList.add('hidden');
+                panel.classList.add('hidden');
+                controls.classList.add('hidden');
+                document.querySelector('.therapy-modes').style.opacity = '0';
+                
+                if (!achievements.zenMaster && flowLevel > 50) {
+                    unlockAchievement('zenMaster', 'Zen Master 🧘', 'Pure focus achieved');
+                }
+            } else {
+                toggle.classList.remove('active');
+                hud.classList.remove('hidden');
+                panel.classList.remove('hidden');
+                controls.classList.remove('hidden');
+                document.querySelector('.therapy-modes').style.opacity = '1';
+            }
+        }
+
+        function toggleBilateral() {
+            bilateralMode = !bilateralMode;
+            const toggle = document.getElementById('bilateralToggle');
+            const bg = document.getElementById('bilateralBg');
+            
+            if (bilateralMode) {
+                toggle.classList.add('active');
+                bg.classList.add('active');
+                startBilateralStimulation();
+            } else {
+                toggle.classList.remove('active');
+                bg.classList.remove('active');
+                stopBilateralStimulation();
+            }
+        }
+
+        // Bilateral Stimulation
+        function startBilateralStimulation() {
+            bilateralInterval = setInterval(() => {
+                const left = document.querySelector('.bilateral-left');
+                const right = document.querySelector('.bilateral-right');
+                
+                if (bilateralState === 'left') {
+                    left.style.background = 'rgba(167, 139, 250, 0.25)'; // Increased opacity
+                    right.style.background = 'transparent';
+                    bilateralState = 'right';
+                } else {
+                    right.style.background = 'rgba(45, 212, 191, 0.25)'; // Increased opacity
+                    left.style.background = 'transparent';
+                    bilateralState = 'left';
+                }
+            }, 1200);
+        }
+
+        function stopBilateralStimulation() {
+            if (bilateralInterval) {
+                clearInterval(bilateralInterval);
+                bilateralInterval = null;
+            }
+            document.querySelector('.bilateral-left').style.background = 'transparent';
+            document.querySelector('.bilateral-right').style.background = 'transparent';
+        }
+
+        // Sound Therapy
+        function toggleSound() {
+            soundMode = !soundMode;
+            const toggle = document.getElementById('soundToggle');
+            const visualizer = document.getElementById('soundVisualizer');
+            
+            if (soundMode) {
+                toggle.classList.add('active');
+                visualizer.classList.add('active');
+                startSoundTherapy();
+            } else {
+                toggle.classList.remove('active');
+                visualizer.classList.remove('active');
+                stopSoundTherapy();
+            }
+        }
+
+        function startSoundTherapy() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1;
+                gainNode.connect(audioContext.destination);
+            }
+            
+            const leftOsc = audioContext.createOscillator();
+            const rightOsc = audioContext.createOscillator();
+            
+            const leftPanner = audioContext.createStereoPanner();
+            const rightPanner = audioContext.createStereoPanner();
+            
+            leftPanner.pan.value = -1;
+            rightPanner.pan.value = 1;
+            
+            leftOsc.frequency.value = 200; 
+            rightOsc.frequency.value = 206; 
+            
+            leftOsc.connect(leftPanner).connect(gainNode);
+            rightOsc.connect(rightPanner).connect(gainNode);
+            
+            leftOsc.start();
+            rightOsc.start();
+            
+            oscillators = [leftOsc, rightOsc];
+            
+            animateSoundVisualizer();
+        }
+
+        function stopSoundTherapy() {
+            oscillators.forEach(osc => {
+                osc.stop();
+                osc.disconnect();
+            });
+            oscillators = [];
+        }
+
+        function animateSoundVisualizer() {
+            if (!soundMode) return;
+            
+            const bars = document.querySelectorAll('.sound-bar');
+            bars.forEach((bar, i) => {
+                const height = 10 + Math.random() * 40 + (flowLevel / 5);
+                bar.style.height = height + 'px';
+            });
+            
+            setTimeout(animateSoundVisualizer, 100);
+        }
+
+        // --- FIXED: Guided Path Logic ---
+        function toggleGuided() {
+            guidedMode = !guidedMode;
+            const toggle = document.getElementById('guidedToggle');
+            const path = document.getElementById('guidedPath');
+            
+            if (guidedMode) {
+                toggle.classList.add('active');
+                path.classList.add('active');
+                setTimeout(createGuidedPath, 10);
+            } else {
+                toggle.classList.remove('active');
+                path.classList.remove('active');
+                setTimeout(() => { path.innerHTML = ''; }, 500);
+            }
+        }
+
+        function createGuidedPath() {
+            if (!guidedMode) return;
+
+            const path = document.getElementById('guidedPath');
+            path.innerHTML = '';
+            
+            const cX = window.innerWidth / 2;
+            const cY = window.innerHeight / 2;
+            
+            const circles = [0.3, 0.55, 0.78];
+            circles.forEach((ratio, index) => {
+                const circle = document.createElement('div');
+                circle.className = 'path-circle';
+                
+                const size = Math.min(window.innerWidth, window.innerHeight) * ratio;
+                
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = cX + 'px';
+                circle.style.top = cY + 'px';
+                
+                const direction = index % 2 === 0 ? 'normal' : 'reverse';
+                circle.style.animationDirection = direction;
+                circle.style.animationDuration = (25 + index * 10) + 's'; 
+                
+                path.appendChild(circle);
+            });
+        }
+
+        // Start Experience
+        function startExperience() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            sessionStartTime = Date.now();
+            
+            createAmbientParticles();
+            
+            setTimeout(() => {
+                showAffirmation();
+            }, 2000);
+            
+            setInterval(() => {
+                if (flowLevel > 60 && !zenMode) {
+                    showAffirmation(currentTherapyMode);
+                }
+            }, 45000);
+        }
+
+        // Flow decay
+        setInterval(() => {
+            if (!drawing && flowLevel > 0) {
+                flowLevel = Math.max(0, flowLevel - 0.15);
+                updateFlowUI();
+            }
+        }, 100);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'c' || e.key === 'C') clearCanvas();
+            if (e.key === 's' || e.key === 'S') downloadArt();
+            if (e.key === 'z' || e.key === 'Z') toggleZenMode();
+            if (e.key === 'b' || e.key === 'B') toggleBilateral();
+            if (e.key === 'u' || e.key === 'U') undoStroke();
+            if (e.key === '+' || e.key === '=') changeSymmetry(1);
+            if (e.key === '-' || e.key === '_') changeSymmetry(-1);
+            if (e.key === 'Escape') closeReframe();
+        });
+
+    </script>
+</body>
+</html>

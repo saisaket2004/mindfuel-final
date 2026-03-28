@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Flow | MindFuel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #818cf8;
+            --secondary: #2dd4bf;
+            --tertiary: #a78bfa;
+            --accent: #ec4899;
+            --bg-deep: #030712;
+            --bg-layer: rgba(15, 23, 42, 0.6);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            background: var(--bg-deep);
+            overflow: hidden; 
+            font-family: 'Outfit', sans-serif;
+            cursor: none;
+            position: relative;
+        }
+
+        /* Background ambient gradient */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(129, 140, 248, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(45, 212, 191, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            animation: ambient-shift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes ambient-shift {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        canvas { 
+            display: block; 
+            position: absolute; 
+            top: 0; left: 0; 
+            z-index: 1;
+        }
+
+        /* Advanced Cursor System with Particle Trail */
+        .cursor-light {
+            position: absolute;
+            width: 400px; 
+            height: 400px;
+            background: radial-gradient(
+                circle, 
+                rgba(129, 140, 248, 0.25) 0%, 
+                rgba(45, 212, 191, 0.15) 30%,
+                rgba(167, 139, 250, 0.08) 60%,
+                transparent 80%
+            );
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s ease;
+            mix-blend-mode: screen;
+            filter: blur(40px);
+        }
+
+        .cursor-light.focused {
+            width: 600px;
+            height: 600px;
+            opacity: 0.9;
+        }
+
+        .cursor-light.agitated {
+            width: 300px;
+            height: 300px;
+            opacity: 0.5;
+        }
+
+        .cursor-core {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            box-shadow: 0 0 10px rgba(129, 140, 248, 0.8);
+            transition: transform 0.1s ease;
+        }
+
+        /* UI Container - Intelligent auto-hide system */
+        .ui-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .ui-container.hidden {
+            opacity: 0;
+        }
+
+        .ui-container > * {
+            pointer-events: auto;
+        }
+
+        /* HUD System - Minimal */
+        .hud {
+            position: absolute;
+            top: 20px; 
+            left: 20px;
+            z-index: 10;
+            color: rgba(255, 255, 255, 0.9);
+            pointer-events: none; 
+            max-width: 280px;
+            transition: all 0.6s ease;
+        }
+
+        .ui-container.hidden .hud {
+            transform: translateY(-120%);
+            opacity: 0;
+        }
+
+        .hud-title {
+            font-weight: 600; 
+            font-size: 1.2rem; 
+            letter-spacing: 2px; 
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #818cf8 0%, #2dd4bf 50%, #a78bfa 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 6s ease infinite;
+        }
+
+        @keyframes gradient-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hud-subtitle { 
+            font-size: 0.75rem; 
+            color: #94a3b8; 
+            line-height: 1.4;
+            font-weight: 300;
+            opacity: 0.6;
+        }
+
+        /* Biofeedback Panel - Minimal */
+        .biofeedback {
+            position: absolute;
+            top: 20px; 
+            right: 20px;
+            z-index: 10;
+            background: var(--bg-layer);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 14px 18px;
+            min-width: 180px;
+            cursor: default;
+            transition: all 0.6s ease;
+        }
+
+        .ui-container.hidden .biofeedback {
+            transform: translateY(-120%);
+            opacity: 0;
+        }
+
+        .biofeedback-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .metric {
+            margin-bottom: 12px;
+        }
+
+        .metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(129, 140, 248, 0.3);
+        }
+
+        /* Flow State Indicator - Minimal */
+        .flow-indicator {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            background: var(--bg-layer);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.6s ease;
+        }
+
+        .ui-container.hidden .flow-indicator {
+            transform: translateY(150%);
+            opacity: 0;
+        }
+
+        .flow-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--primary) 0deg,
+                var(--secondary) 120deg,
+                var(--tertiary) 240deg,
+                var(--primary) 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: rotate 8s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .flow-circle::before {
+            content: '';
+            width: 38px;
+            height: 38px;
+            background: var(--bg-deep);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .flow-percentage {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            z-index: 1;
+        }
+
+        .flow-text {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .flow-state {
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Mode Control System - ULTRA COMPACT */
+        .mode-system {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 200;
+            cursor: default !important;
+            transition: all 0.6s ease;
+        }
+
+        .ui-container.hidden .mode-system {
+            transform: translateY(150%);
+            opacity: 0;
+        }
+
+        .mode-system * {
+            cursor: default !important;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .mode-card {
+            background: var(--bg-layer);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 85px;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(129, 140, 248, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .mode-card.active {
+            background: rgba(129, 140, 248, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.2);
+        }
+
+        .mode-icon {
+            font-size: 1.1rem;
+            margin-bottom: 3px;
+        }
+
+        .mode-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .mode-desc {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
+            line-height: 1.2;
+        }
+
+        /* PRIMARY ACTION BUTTONS - ULTRA COMPACT */
+        .primary-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-large {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.85) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white; 
+            padding: 8px 14px; 
+            border-radius: 10px;
+            text-decoration: none; 
+            font-size: 0.75rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            pointer-events: auto !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-large:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.25);
+        }
+
+        .btn-large-icon {
+            font-size: 0.9rem;
+        }
+
+        .btn-exit-large { 
+            border-color: rgba(239, 68, 68, 0.3); 
+            color: #fca5a5;
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.25) 0%, rgba(153, 27, 27, 0.25) 100%);
+        }
+
+        .btn-exit-large:hover { 
+            border-color: #ef4444;
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.4) 0%, rgba(153, 27, 27, 0.4) 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary-large {
+            border-color: rgba(129, 140, 248, 0.25);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(129, 140, 248, 0.12) 100%);
+        }
+
+        .btn-primary-large:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(129, 140, 248, 0.2) 100%);
+        }
+
+        /* Secondary Action Controls - Ultra Compact */
+        .action-controls {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            pointer-events: auto;
+        }
+
+        .btn {
+            background: var(--bg-layer);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 16px;
+            text-decoration: none; 
+            font-size: 0.7rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            pointer-events: auto !important;
+        }
+
+        .btn:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(129, 140, 248, 0.2);
+        }
+
+        .btn-icon {
+            font-size: 0.85rem;
+        }
+
+        .btn.active {
+            background: rgba(129, 140, 248, 0.12);
+            border-color: var(--primary);
+        }
+
+        /* Audio System UI - Minimal */
+        .audio-trigger {
+            position: absolute; 
+            top: 20px; 
+            right: 220px;
+            z-index: 10;
+            background: var(--bg-layer);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            color: #818cf8; 
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.6s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: gentle-pulse 4s ease-in-out infinite;
+        }
+
+        .ui-container.hidden .audio-trigger {
+            transform: translateY(-120%);
+            opacity: 0;
+        }
+
+        @keyframes gentle-pulse { 
+            0%, 100% { opacity: 0.6; transform: scale(1) translateY(0); } 
+            50% { opacity: 0.9; transform: scale(1.01) translateY(0); } 
+        }
+
+        .audio-trigger:hover {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: var(--primary);
+        }
+
+        .audio-trigger.active {
+            animation: none;
+            opacity: 1;
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        /* UI TOGGLE BUTTON - Zen Circle with Intentional Interaction Zone */
+        .ui-toggle-zone {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 250;
+            width: 60px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+
+        .ui-toggle {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(45, 212, 191, 0.15) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 50%;
+            cursor: pointer !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 3px 12px rgba(129, 140, 248, 0.15);
+            animation: gentle-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes gentle-glow {
+            0%, 100% { box-shadow: 0 3px 12px rgba(129, 140, 248, 0.15); }
+            50% { box-shadow: 0 3px 18px rgba(129, 140, 248, 0.3); }
+        }
+
+        .ui-toggle:hover {
+            transform: scale(1.15);
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.25) 0%, rgba(45, 212, 191, 0.25) 100%);
+            border-color: var(--primary);
+        }
+
+        .ui-toggle::before {
+            content: '☰';
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+.ui-toggle::before {
+    content: '☰';
+    font-size: 1.1rem;
+}
+
+.ui-toggle.open::before {
+    content: '✕';
+    font-size: 1.3rem;
+}
+
+        /* System Notifications - MINIMAL & SUBTLE */
+        .notification-system {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            z-index: 150;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .notification {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.92) 100%);
+            backdrop-filter: blur(25px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.75rem;
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateX(50px) scale(0.9);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 220px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background: linear-gradient(90deg, 
+                var(--primary) 0%, 
+                var(--secondary) 50%, 
+                var(--tertiary) 100%);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        .notification-icon {
+            font-size: 1rem;
+            filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.5));
+        }
+
+        .notification-text {
+            flex: 1;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+            line-height: 1.3;
+        }
+
+        /* Particle Trail Effect */
+        .trail-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(129, 140, 248, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            animation: trail-fade 1s ease-out forwards;
+        }
+
+        @keyframes trail-fade {
+            to {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hud, .biofeedback, .flow-indicator {
+                display: none;
+            }
+            
+            .audio-trigger {
+                top: 20px;
+                right: 20px;
+            }
+
+            .mode-system {
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .ui-toggle-zone {
+                left: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+    
+    <div class="cursor-light" id="cursorLight"></div>
+    <div class="cursor-core" id="cursorCore"></div>
+
+    
+    <div class="ui-container" id="uiContainer">
+        <div class="hud">
+            <h1 class="hud-title">NEURAL FLOW</h1>
+            <p class="hud-subtitle">
+                Move slowly for deep flow state. The network responds to your intention.
+            </p>
+        </div>
+
+        <div class="biofeedback">
+            <div class="biofeedback-title">Biofeedback</div>
+            
+            <div class="metric">
+                <div class="metric-label">
+                    <span>Coherence</span>
+                    <span class="metric-value" id="coherence">0%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" id="coherenceBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">
+                    <span>Mindful</span>
+                    <span class="metric-value" id="mindfulness">0%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" id="mindfulnessBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">
+                    <span>Rhythm</span>
+                    <span class="metric-value" id="rhythm">0%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" id="rhythmBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">
+                    <span>Session</span>
+                    <span class="metric-value" id="sessionTime">0:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flow-indicator">
+            <div class="flow-circle">
+                <span class="flow-percentage" id="flowPercentage">0%</span>
+            </div>
+            <div>
+                <div class="flow-text">Flow State</div>
+                <div class="flow-state" id="flowState">Settling</div>
+            </div>
+        </div>
+
+        <div class="audio-trigger" id="audioTrigger">
+            <span class="btn-icon">🎵</span>
+            <span>Audio</span>
+        </div>
+
+        <div class="mode-system">
+            
+            <div class="primary-actions">
+                <a href="/" class="btn-large btn-exit-large">
+                    <span class="btn-large-icon">⏻</span>
+                    <span>Exit</span>
+                </a>
+                <button class="btn-large btn-primary-large" onclick="resetSystem()">
+                    <span class="btn-large-icon">↻</span>
+                    <span>Reset</span>
+                </button>
+            </div>
+
+            
+            <div class="mode-grid">
+                <div class="mode-card active" data-mode="zen" onclick="setMode('zen')">
+                    <div class="mode-icon">🧘</div>
+                    <div class="mode-name">Zen</div>
+                    <div class="mode-desc">Meditate</div>
+                </div>
+                <div class="mode-card" data-mode="focus" onclick="setMode('focus')">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-name">Focus</div>
+                    <div class="mode-desc">Concentrate</div>
+                </div>
+                <div class="mode-card" data-mode="energy" onclick="setMode('energy')">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-name">Energy</div>
+                    <div class="mode-desc">Active</div>
+                </div>
+                <div class="mode-card" data-mode="creative" onclick="setMode('creative')">
+                    <div class="mode-icon">✨</div>
+                    <div class="mode-name">Creative</div>
+                    <div class="mode-desc">Explore</div>
+                </div>
+            </div>
+            
+            
+            <div class="action-controls">
+                <button class="btn" id="trailBtn" onclick="toggleTrail()">
+                    <span class="btn-icon">✦</span>
+                    <span>Trail</span>
+                </button>
+                <button class="btn" id="glowBtn" onclick="toggleGlow()">
+                    <span class="btn-icon">◐</span>
+                    <span>Glow</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="notification-system" id="notificationSystem"></div>
+    </div>
+
+    
+    <div class="ui-toggle-zone">
+        <div class="ui-toggle" id="uiToggle"></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // ===== CORE SYSTEM INITIALIZATION =====
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { alpha: true });
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // ===== INTELLIGENT UI AUTO-HIDE SYSTEM =====
+        let uiHideTimer = null;
+        let uiVisible = true;
+        let isOverUIElement = false;
+        let lastUIInteractionTime = Date.now();
+        const UI_HIDE_DELAY = 8000; // 8 seconds - psychological sweet spot
+        const UI_INTERACTION_ZONE_DELAY = 500; // Brief delay before showing UI
+
+        function resetUITimer() {
+            clearTimeout(uiHideTimer);
+            lastUIInteractionTime = Date.now();
+            uiHideTimer = setTimeout(hideUI, UI_HIDE_DELAY);
+        }
+
+function showUI() {
+    if (!uiVisible) {
+        document.getElementById('uiContainer').classList.remove('hidden');
+        document.getElementById('uiToggle').classList.add('open'); // ✅
+        uiVisible = true;
+    }
+}
+
+function hideUI() {
+    const timeSinceInteraction = Date.now() - lastUIInteractionTime;
+    if (!isOverUIElement && uiVisible && timeSinceInteraction >= UI_HIDE_DELAY) {
+        document.getElementById('uiContainer').classList.add('hidden');
+        document.getElementById('uiToggle').classList.remove('open'); // ✅
+        uiVisible = false;
+    }
+}
+
+        function toggleUI() {
+            if (uiVisible) {
+                hideUI();
+                clearTimeout(uiHideTimer);
+            } else {
+                showUI();
+                resetUITimer();
+            }
+        }
+
+        // UI Toggle button with click tracking
+        document.getElementById('uiToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleUI();
+        });
+
+        // Track when mouse is over UI elements
+        document.getElementById('uiContainer').addEventListener('mouseenter', () => {
+            isOverUIElement = true;
+            clearTimeout(uiHideTimer);
+            showUI();
+        });
+
+        document.getElementById('uiContainer').addEventListener('mouseleave', () => {
+            isOverUIElement = false;
+            resetUITimer();
+        });
+
+        // Prevent accidental UI showing on general mouse movement
+        // Only show UI when mouse is in specific intentional zones AND pauses
+        let mousePauseTimer = null;
+        let isInUIZone = false;
+
+        function checkUIZone(x, y) {
+            // Define intentional UI interaction zones (corners and edges)
+            const leftZone = x < 250;
+            const rightZone = x > canvas.width - 250;
+            const topZone = y < 150;
+            const bottomZone = y > canvas.height - 250;
+            
+            return (leftZone || rightZone) && (topZone || bottomZone);
+        }
+
+        // ===== STATE MANAGEMENT =====
+        const state = {
+            particles: [],
+            mode: 'zen',
+            audioContext: null,
+            audioEnabled: false,
+            oscillators: [],
+            
+            // Psychology-driven metrics
+            coherence: 0,        
+            mindfulness: 0,      
+            rhythm: 0,           
+            flowState: 0,        
+            
+            // Interaction tracking
+            mouse: { x: null, y: null, radius: 150 },
+            mouseVelocity: { x: 0, y: 0, magnitude: 0 },
+            lastMousePos: { x: 0, y: 0 },
+            movementHistory: [],
+            
+            // Visual settings
+            trailEnabled: true,
+            glowEnabled: true,
+            
+            // Time tracking
+            startTime: Date.now(),
+            lastFrameTime: Date.now(),
+            
+            // Notification throttling
+            lastNotificationTime: 0,
+            notificationCooldown: 15000, // 15 seconds minimum between notifications
+            
+            // Mode configurations
+            modeConfig: {
+                zen: {
+                    particleCount: 80,
+                    connectionDistance: 180,
+                    particleSpeed: 0.3,
+                    colors: ['rgba(129, 140, 248, 0.8)', 'rgba(45, 212, 191, 0.7)', 'rgba(255, 255, 255, 0.5)'],
+                    audioFreqs: [110, 165, 220],
+                    description: 'Deep Peace'
+                },
+                focus: {
+                    particleCount: 120,
+                    connectionDistance: 140,
+                    particleSpeed: 0.5,
+                    colors: ['rgba(129, 140, 248, 1)', 'rgba(99, 102, 241, 0.9)', 'rgba(167, 139, 250, 0.8)'],
+                    audioFreqs: [220, 330, 440],
+                    description: 'Concentrated'
+                },
+                energy: {
+                    particleCount: 150,
+                    connectionDistance: 160,
+                    particleSpeed: 1.2,
+                    colors: ['rgba(236, 72, 153, 0.9)', 'rgba(129, 140, 248, 0.8)', 'rgba(45, 212, 191, 0.9)'],
+                    audioFreqs: [330, 440, 550],
+                    description: 'Energized'
+                },
+                creative: {
+                    particleCount: 100,
+                    connectionDistance: 200,
+                    particleSpeed: 0.7,
+                    colors: ['rgba(167, 139, 250, 0.8)', 'rgba(236, 72, 153, 0.7)', 'rgba(45, 212, 191, 0.8)'],
+                    audioFreqs: [165, 247, 330],
+                    description: 'Imaginative'
+                }
+            }
+        };
+
+        // ===== PARTICLE SYSTEM =====
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.baseSize = size;
+                this.color = color;
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                this.soundCooldown = 0;
+                this.energy = 0;
+            }
+
+            draw() {
+                const config = state.modeConfig[state.mode];
+                
+                const pulse = Math.sin(this.pulsePhase + this.energy) * 0.4 + 1;
+                const currentSize = this.baseSize * pulse;
+                
+                if (state.glowEnabled) {
+                    const glowLayers = 3;
+                    for (let i = glowLayers; i > 0; i--) {
+                        const gradient = ctx.createRadialGradient(
+                            this.x, this.y, 0,
+                            this.x, this.y, currentSize * (2 + i)
+                        );
+                        gradient.addColorStop(0, this.color);
+                        gradient.addColorStop(0.3, this.color.replace(/[\d.]+\)$/g, `${0.2 / i})`));
+                        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        
+                        ctx.fillStyle = gradient;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, currentSize * (2 + i), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                if (this.energy > 2) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, currentSize * 2, 0, Math.PI * 2);
+                    ctx.strokeStyle = this.color.replace(/[\d.]+\)$/g, '0.3)');
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            update() {
+                const config = state.modeConfig[state.mode];
+                
+                if (this.x > canvas.width - this.size || this.x < this.size) {
+                    this.directionX *= -0.95;
+                    this.x = Math.max(this.size, Math.min(canvas.width - this.size, this.x));
+                }
+                if (this.y > canvas.height - this.size || this.y < this.size) {
+                    this.directionY *= -0.95;
+                    this.y = Math.max(this.size, Math.min(canvas.height - this.size, this.y));
+                }
+
+                const dx = state.mouse.x - this.x;
+                const dy = state.mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < state.mouse.radius) {
+                    const force = (state.mouse.radius - distance) / state.mouse.radius;
+                    const angle = Math.atan2(dy, dx);
+                    
+                    const velocityFactor = Math.min(state.mouseVelocity.magnitude / 10, 2);
+                    
+                    if (state.mouseVelocity.magnitude < 3) {
+                        const attractionStrength = force * 0.3;
+                        this.directionX += Math.cos(angle) * attractionStrength * 0.1;
+                        this.directionY += Math.sin(angle) * attractionStrength * 0.1;
+                    } else {
+                        const repulsionStrength = force * (2 + velocityFactor);
+                        this.directionX -= Math.cos(angle) * repulsionStrength * 0.5;
+                        this.directionY -= Math.sin(angle) * repulsionStrength * 0.5;
+                    }
+                    
+                    this.energy = Math.min(this.energy + 0.1, 5);
+                    
+                    if (this.soundCooldown <= 0 && Math.random() > 0.92 && state.audioEnabled) {
+                        const baseFreq = 261.63;
+                        const scale = [1, 9/8, 5/4, 3/2, 5/3];
+                        const octaveMultiplier = 1 + Math.floor((canvas.height - this.y) / canvas.height * 2);
+                        const scaleNote = scale[Math.floor(Math.random() * scale.length)];
+                        const freq = baseFreq * scaleNote * octaveMultiplier;
+                        
+                        const pan = ((this.x / canvas.width) - 0.5) * 2;
+                        playInteractionSound(freq, 0.5, pan, force);
+                        this.soundCooldown = 15 + Math.random() * 10;
+                    }
+                } else {
+                    this.energy *= 0.95;
+                }
+                
+                if (this.soundCooldown > 0) this.soundCooldown--;
+
+                const damping = 0.98;
+                this.directionX *= damping;
+                this.directionY *= damping;
+                
+                this.x += this.directionX * config.particleSpeed;
+                this.y += this.directionY * config.particleSpeed;
+                
+                this.pulsePhase += 0.03;
+                
+                this.draw();
+            }
+        }
+
+        // ===== PARTICLE CONNECTIONS =====
+        function connectParticles() {
+            const config = state.modeConfig[state.mode];
+            let connectionCount = 0;
+            const maxDistance = config.connectionDistance;
+            
+            for (let a = 0; a < state.particles.length; a++) {
+                for (let b = a + 1; b < state.particles.length; b++) {
+                    const dx = state.particles[a].x - state.particles[b].x;
+                    const dy = state.particles[a].y - state.particles[b].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < maxDistance) {
+                        const opacity = (1 - (distance / maxDistance)) * 0.6;
+                        
+                        const avgEnergy = (state.particles[a].energy + state.particles[b].energy) / 2;
+                        const gradient = ctx.createLinearGradient(
+                            state.particles[a].x, state.particles[a].y,
+                            state.particles[b].x, state.particles[b].y
+                        );
+                        
+                        gradient.addColorStop(0, `rgba(129, 140, 248, ${opacity * (1 + avgEnergy * 0.2)})`);
+                        gradient.addColorStop(0.5, `rgba(45, 212, 191, ${opacity * 0.8})`);
+                        gradient.addColorStop(1, `rgba(167, 139, 250, ${opacity * (1 + avgEnergy * 0.2)})`);
+                        
+                        ctx.strokeStyle = gradient;
+                        ctx.lineWidth = opacity * 2;
+                        ctx.beginPath();
+                        ctx.moveTo(state.particles[a].x, state.particles[a].y);
+                        ctx.lineTo(state.particles[b].x, state.particles[b].y);
+                        ctx.stroke();
+                        
+                        connectionCount++;
+                    }
+                }
+            }
+            
+            return connectionCount;
+        }
+
+        // ===== AUDIO SYNTHESIS ENGINE =====
+        function initAudioContext() {
+            if (state.audioEnabled) return;
+            
+            state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            state.audioEnabled = true;
+            document.getElementById('audioTrigger').classList.add('active');
+            document.getElementById('audioTrigger').innerHTML = '<span class="btn-icon">🔊</span><span>Audio</span>';
+            notify('Audio enabled', '🎵', true);
+        }
+
+        function playInteractionSound(freq, duration, pan, intensity) {
+            if (!state.audioEnabled) return;
+            
+            const osc = state.audioContext.createOscillator();
+            const gain = state.audioContext.createGain();
+            const panner = state.audioContext.createStereoPanner();
+            const filter = state.audioContext.createBiquadFilter();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, state.audioContext.currentTime);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(freq * 3, state.audioContext.currentTime);
+            filter.Q.setValueAtTime(0.7, state.audioContext.currentTime);
+            
+            panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), state.audioContext.currentTime);
+            
+            const baseVolume = 0.05 * intensity;
+            gain.gain.setValueAtTime(baseVolume, state.audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, state.audioContext.currentTime + duration);
+            
+            osc.connect(filter);
+            filter.connect(panner);
+            panner.connect(gain);
+            gain.connect(state.audioContext.destination);
+            osc.start();
+            osc.stop(state.audioContext.currentTime + duration);
+        }
+
+        // ===== BIOFEEDBACK CALCULATION =====
+        function updateBiofeedback() {
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - state.lastFrameTime) / 1000;
+            state.lastFrameTime = currentTime;
+            
+            state.movementHistory.push({
+                velocity: state.mouseVelocity.magnitude,
+                time: currentTime
+            });
+            
+            state.movementHistory = state.movementHistory.filter(h => currentTime - h.time < 3000);
+            
+            if (state.movementHistory.length > 10) {
+                const velocities = state.movementHistory.map(h => h.velocity);
+                const avgVelocity = velocities.reduce((a, b) => a + b, 0) / velocities.length;
+                const variance = velocities.reduce((sum, v) => sum + Math.pow(v - avgVelocity, 2), 0) / velocities.length;
+                const stability = Math.max(0, 100 - Math.sqrt(variance) * 2);
+                state.coherence = state.coherence * 0.9 + stability * 0.1;
+            }
+            
+            const targetMindfulness = Math.max(0, 100 - (state.mouseVelocity.magnitude * 4));
+            state.mindfulness = state.mindfulness * 0.95 + targetMindfulness * 0.05;
+            
+            if (state.movementHistory.length > 20) {
+                const recentVelocities = state.movementHistory.slice(-20).map(h => h.velocity);
+                const differences = recentVelocities.slice(1).map((v, i) => Math.abs(v - recentVelocities[i]));
+                const avgDifference = differences.reduce((a, b) => a + b, 0) / differences.length;
+                const rhythmScore = Math.max(0, 100 - (avgDifference * 3));
+                state.rhythm = state.rhythm * 0.9 + rhythmScore * 0.1;
+            }
+            
+            state.flowState = (state.coherence * 0.4 + state.mindfulness * 0.4 + state.rhythm * 0.2);
+            
+            updateMetricDisplay('coherence', state.coherence);
+            updateMetricDisplay('mindfulness', state.mindfulness);
+            updateMetricDisplay('rhythm', state.rhythm);
+            updateFlowState(state.flowState);
+            
+            const elapsed = Math.floor((currentTime - state.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('sessionTime').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // REDUCED milestone notifications - only at significant moments
+            if (!state.milestones) state.milestones = {};
+            
+            if (elapsed === 300 && !state.milestones.five) { // 5 minutes
+                state.milestones.five = true;
+                notify('5 min - entering flow', '🌊');
+            }
+            if (elapsed === 600 && !state.milestones.ten) { // 10 minutes
+                state.milestones.ten = true;
+                notify('10 min - deep state', '✨');
+            }
+            if (elapsed === 900 && !state.milestones.fifteen) { // 15 minutes
+                state.milestones.fifteen = true;
+                notify('15 min - profound calm', '🎯');
+            }
+        }
+
+        function updateMetricDisplay(metric, value) {
+            const displayValue = Math.round(value);
+            document.getElementById(metric).textContent = displayValue + '%';
+            document.getElementById(metric + 'Bar').style.width = displayValue + '%';
+        }
+
+        function updateFlowState(value) {
+            const displayValue = Math.round(value);
+            document.getElementById('flowPercentage').textContent = displayValue + '%';
+            
+            const stateText = document.getElementById('flowState');
+            const previousState = stateText.dataset.previousState || 'Settling';
+            let newState = '';
+            
+            if (value < 30) {
+                newState = 'Settling';
+            } else if (value < 60) {
+                newState = 'Engaging';
+            } else if (value < 80) {
+                newState = 'Flowing';
+            } else {
+                newState = 'Deep Flow';
+            }
+            
+            // REDUCED state transition notifications - only major transitions
+            if (newState !== previousState) {
+                if (newState === 'Flowing' && previousState !== 'Deep Flow') {
+                    notify('Flow achieved', '🌟');
+                } else if (newState === 'Deep Flow') {
+                    notify('Deep flow state', '🎯');
+                }
+            }
+            
+            stateText.textContent = newState;
+            stateText.dataset.previousState = newState;
+        }
+
+        // ===== MOUSE TRACKING =====
+        let trailCounter = 0;
+        window.addEventListener('mousemove', (e) => {
+            const dx = e.x - state.lastMousePos.x;
+            const dy = e.y - state.lastMousePos.y;
+            state.mouseVelocity.x = dx;
+            state.mouseVelocity.y = dy;
+            state.mouseVelocity.magnitude = Math.sqrt(dx * dx + dy * dy);
+            
+            state.mouse.x = e.x;
+            state.mouse.y = e.y;
+            
+            state.lastMousePos.x = e.x;
+            state.lastMousePos.y = e.y;
+            
+            const cursorLight = document.getElementById('cursorLight');
+            const cursorCore = document.getElementById('cursorCore');
+            
+            cursorLight.style.left = e.x + 'px';
+            cursorLight.style.top = e.y + 'px';
+            cursorCore.style.left = e.x + 'px';
+            cursorCore.style.top = e.y + 'px';
+            
+            cursorLight.classList.remove('focused', 'agitated');
+            if (state.mouseVelocity.magnitude < 3) {
+                cursorLight.classList.add('focused');
+            } else if (state.mouseVelocity.magnitude > 15) {
+                cursorLight.classList.add('agitated');
+            }
+            
+            if (state.trailEnabled && trailCounter % 3 === 0) {
+                createTrailParticle(e.x, e.y);
+            }
+            trailCounter++;
+
+            // INTELLIGENT UI SHOWING - only in corners with pause
+            clearTimeout(mousePauseTimer);
+            
+            const newIsInUIZone = checkUIZone(e.x, e.y);
+            
+            if (newIsInUIZone && !uiVisible) {
+                // Mouse is in UI zone, wait for pause before showing
+                mousePauseTimer = setTimeout(() => {
+                    if (checkUIZone(e.x, e.y) && !uiVisible) {
+                        showUI();
+                        resetUITimer();
+                    }
+                }, UI_INTERACTION_ZONE_DELAY);
+            }
+            
+            isInUIZone = newIsInUIZone;
+        });
+
+        function createTrailParticle(x, y) {
+            const trail = document.createElement('div');
+            trail.className = 'trail-particle';
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            trail.style.background = `rgba(${Math.random() > 0.5 ? '129, 140, 248' : '45, 212, 191'}, ${Math.random() * 0.6 + 0.4})`;
+            document.body.appendChild(trail);
+            
+            setTimeout(() => trail.remove(), 1000);
+        }
+
+        // ===== INITIALIZATION =====
+        function initParticles() {
+            state.particles = [];
+            const config = state.modeConfig[state.mode];
+            const numberOfParticles = Math.floor((canvas.height * canvas.width) / 12000 * (config.particleCount / 100));
+            
+            for (let i = 0; i < numberOfParticles; i++) {
+                const size = (Math.random() * 2.5) + 1.5;
+                const x = Math.random() * (canvas.width - size * 4) + size * 2;
+                const y = Math.random() * (canvas.height - size * 4) + size * 2;
+                const directionX = (Math.random() - 0.5) * 2;
+                const directionY = (Math.random() - 0.5) * 2;
+                const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+                
+                state.particles.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        // ===== ANIMATION LOOP =====
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            state.particles.forEach(particle => particle.update());
+            
+            connectParticles();
+            
+            updateBiofeedback();
+        }
+
+        // ===== MODE SWITCHING =====
+        function setMode(mode) {
+            state.mode = mode;
+            
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+                if (card.dataset.mode === mode) {
+                    card.classList.add('active');
+                }
+            });
+            
+            initParticles();
+            
+            const config = state.modeConfig[mode];
+            notify(`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`, '🎯', true);
+            
+            resetUITimer();
+        }
+
+        // ===== UI CONTROLS =====
+        function resetSystem() {
+            state.coherence = 0;
+            state.mindfulness = 0;
+            state.rhythm = 0;
+            state.flowState = 0;
+            state.movementHistory = [];
+            state.startTime = Date.now();
+            state.milestones = {};
+            initParticles();
+            notify('Reset', '↻', true);
+            resetUITimer();
+        }
+
+        function toggleTrail() {
+            state.trailEnabled = !state.trailEnabled;
+            const btn = document.getElementById('trailBtn');
+            if (state.trailEnabled) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+            resetUITimer();
+        }
+
+        function toggleGlow() {
+            state.glowEnabled = !state.glowEnabled;
+            const btn = document.getElementById('glowBtn');
+            const cursorLight = document.getElementById('cursorLight');
+            
+            if (state.glowEnabled) {
+                btn.classList.add('active');
+                cursorLight.style.opacity = '1';
+            } else {
+                btn.classList.remove('active');
+                cursorLight.style.opacity = '0';
+            }
+            resetUITimer();
+        }
+
+        // ===== INTELLIGENT NOTIFICATION SYSTEM =====
+        function notify(message, icon = '✓', forceShow = false) {
+            const currentTime = Date.now();
+            
+            // Throttle notifications unless forced (user actions)
+            if (!forceShow && (currentTime - state.lastNotificationTime < state.notificationCooldown)) {
+                return;
+            }
+            
+            state.lastNotificationTime = currentTime;
+            
+            const container = document.getElementById('notificationSystem');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <span class="notification-icon">${icon}</span>
+                <span class="notification-text">${message}</span>
+            `;
+            container.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000); // Show for 4 seconds
+        }
+
+        // ===== AUDIO TRIGGER =====
+        document.getElementById('audioTrigger').addEventListener('click', () => {
+            initAudioContext();
+            resetUITimer();
+        });
+
+        // ===== WINDOW RESIZE =====
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            state.mouse.radius = Math.min(canvas.width, canvas.height) / 8;
+            initParticles();
+        });
+
+        // ===== START =====
+        initParticles();
+        animate();
+        
+        // Initial welcome - then UI auto-hides
+        setTimeout(() => {
+            notify('Welcome. Begin your journey.', '🧘', true);
+            resetUITimer();
+        }, 1000);
+
+    </script>
+</body>
+</html>

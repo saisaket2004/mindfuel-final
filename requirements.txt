@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+Flask-Bcrypt
+PyJWT
+numpy
+tensorflow
+scikit-learn
+pandas

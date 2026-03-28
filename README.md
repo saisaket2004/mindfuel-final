@@ -1,0 +1,2 @@
+# mindfuel-real-time-nlp-stress-detection-analytics
+Currently, mental health interventions are highly reactive, relying on delayed self-reporting usually only after an individual reaches a crisis point or severe burnout. However, early indicators of psychological distress are often passively expressed in everyday digital communication. The problem is a lack of continuous, real-time monitoring system
