@@ -1,32 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --surface: #0f172a;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background: #020617;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+
+        .nav-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        textarea,
+        input,
+        select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Hide the annoying ghost text */
+        h1:contains("Import Parameters"),
+        p:contains("Import Parameters") {
+            display: none !important;
+        }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindFuel AI | Neural Health</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
 </head>
-<body class="lock-scroll"> <nav class="navbar">
+
+<body class="lock-scroll">
+    <nav class="navbar">
         <div class="brand"><i class="fa-solid fa-dna"></i> MindFuel AI</div>
         <div style="display: flex; gap: 15px;">
-            <a href="/about" class="nav-pill" style="color: #38bdf8;"><i class="fa-solid fa-book-open"></i> How it Works</a>
+            <a href="/about" class="nav-pill" style="color: #38bdf8;"><i class="fa-solid fa-book-open"></i> How it
+                Works</a>
             <a href="/games" class="nav-pill"><i class="fa-solid fa-microscope"></i> Targeted Digital Therapeutics</a>
             {% if request.cookies.get('token') %}
-                <a href="/logout" class="nav-pill" style="color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            <a href="/logout" class="nav-pill" style="color: #ef4444;"><i
+                    class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
             {% else %}
-                <a href="/login" class="nav-pill"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-                <a href="/register" class="nav-pill" style="border-color: var(--primary); color: var(--primary);"><i class="fa-solid fa-user-plus"></i> Register</a>
+            <a href="/login" class="nav-pill"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <a href="/register" class="nav-pill" style="border-color: var(--primary); color: var(--primary);"><i
+                    class="fa-solid fa-user-plus"></i> Register</a>
             {% endif %}
         </div>
     </nav>
 
-    <main style="display: grid; grid-template-columns: 1fr 1fr; height: 100vh; max-width: 1400px; margin: 0 auto; padding: 0 5%; align-items: center; gap: 4rem;">
-        
+    <main
+        style="display: grid; grid-template-columns: 1fr 1fr; height: 100vh; max-width: 1400px; margin: 0 auto; padding: 0 5%; align-items: center; gap: 4rem;">
+
         <div class="fade-in">
-            <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            <h1
+                style="font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
                 Understand your mind. <br>In real-time.
             </h1>
             <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 90%; line-height: 1.6;">
@@ -34,42 +109,57 @@
             </p>
         </div>
 
-        <div class="fade-in delay-1" style="background: var(--surface); backdrop-filter: blur(20px); padding: 2.5rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
-            
+        <div class="fade-in delay-1"
+            style="background: var(--surface); backdrop-filter: blur(20px); padding: 2.5rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
                 <h3 style="margin:0;"><i class="fa-solid fa-sliders"></i></h3>
                 <span style="font-size:0.8rem; color:#2dd4bf;">● System Ready</span>
             </div>
 
             <div id="main-screen">
-            <form action="/predict" method="POST" id="scan-form">
-                <div style="margin-bottom:15px;">
-                    <label style="display:block; color:#94a3b8; font-size:0.9rem; margin-bottom:8px;">Linguistic Input</label>
-                    <textarea name="text" rows="2" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;" placeholder="Describe your mental state..." required></textarea>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
-                    <div><label style="color:#94a3b8; font-size:0.9rem;">Sleep (Hrs)</label><input type="number" name="sleep" step="0.1" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;" required></div>
-                    <div><label style="color:#94a3b8; font-size:0.9rem;">Work (Hrs)</label><input type="number" name="work" step="0.1" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;" required></div>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                    <div><label style="color:#94a3b8; font-size:0.9rem;">Screen (Hrs)</label><input type="number" name="screen" step="0.1" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;" required></div>
-                    <div>
-                        <label style="color:#94a3b8; font-size:0.9rem;">Activity</label>
-                        <select name="activity" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;">
-                            <option value="0">Sedentary</option>
-                            <option value="1">Active</option>
-                        </select>
+                <form action="/predict" method="POST" id="scan-form">
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block; color:#94a3b8; font-size:0.9rem; margin-bottom:8px;">Linguistic
+                            Input</label>
+                        <textarea name="text" rows="2"
+                            style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;"
+                            placeholder="Describe your mental state..." required></textarea>
                     </div>
-                </div>
 
-                <button type="submit" class="btn-primary">Run Neurological Assessment</button>
-                <button id="record-btn" type="button" class="btn-primary" style="margin-top: 14px;">
-                    <i class="fa-solid fa-microphone"></i> Record Voice
-                </button>
-            </form>
-            <div id="voice-result" aria-live="polite" style="margin-top: 16px; color: var(--text-muted); font-size: 0.95rem;"></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                        <div><label style="color:#94a3b8; font-size:0.9rem;">Sleep (Hrs)</label><input type="number"
+                                name="sleep" step="0.1"
+                                style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;"
+                                required></div>
+                        <div><label style="color:#94a3b8; font-size:0.9rem;">Work (Hrs)</label><input type="number"
+                                name="work" step="0.1"
+                                style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;"
+                                required></div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div><label style="color:#94a3b8; font-size:0.9rem;">Screen (Hrs)</label><input type="number"
+                                name="screen" step="0.1"
+                                style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;"
+                                required></div>
+                        <div>
+                            <label style="color:#94a3b8; font-size:0.9rem;">Activity</label>
+                            <select name="activity"
+                                style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:12px; border-radius:12px;">
+                                <option value="0">Sedentary</option>
+                                <option value="1">Active</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Run Neurological Assessment</button>
+                    <button id="record-btn" type="button" class="btn-primary" style="margin-top: 14px;">
+                        <i class="fa-solid fa-microphone"></i> Record Voice
+                    </button>
+                </form>
+                <div id="voice-result" aria-live="polite"
+                    style="margin-top: 16px; color: var(--text-muted); font-size: 0.95rem;"></div>
 
             </div>
 
@@ -84,23 +174,35 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
-                    <div style="background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;">
-                        <div style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Stress Level</div>
-                        <div id="assessment-stress-level" style="margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 1.2rem; color: #e2e8f0;">
+                    <div
+                        style="background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;">
+                        <div
+                            style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">
+                            Stress Level</div>
+                        <div id="assessment-stress-level"
+                            style="margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 1.2rem; color: #e2e8f0;">
                             --
                         </div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;">
-                        <div style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Clinical Status</div>
-                        <div style="margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 1.0rem; color: #2dd4bf;">
+                    <div
+                        style="background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;">
+                        <div
+                            style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">
+                            Clinical Status</div>
+                        <div
+                            style="margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 1.0rem; color: #2dd4bf;">
                             READY
                         </div>
                     </div>
                 </div>
 
-                <div style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.18); border-radius: 16px; padding: 16px; margin-bottom: 18px;">
-                    <div style="color: #a5b4fc; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;">Clinical Rationale</div>
-                    <div id="assessment-rationale" style="margin-top: 10px; color: var(--text-muted); line-height: 1.6;">
+                <div
+                    style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.18); border-radius: 16px; padding: 16px; margin-bottom: 18px;">
+                    <div
+                        style="color: #a5b4fc; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;">
+                        Clinical Rationale</div>
+                    <div id="assessment-rationale"
+                        style="margin-top: 10px; color: var(--text-muted); line-height: 1.6;">
                         --
                     </div>
                 </div>
@@ -114,7 +216,8 @@
                     </div>
                 </div>
 
-                <a id="assessment-initiate-btn" href="/games" class="btn-primary" style="margin:0; width: 100%; padding: 14px 18px; text-align:center; display:block; position:relative; z-index:10;">
+                <a id="assessment-initiate-btn" href="/games" class="btn-primary"
+                    style="margin:0; width: 100%; padding: 14px 18px; text-align:center; display:block; position:relative; z-index:10;">
                     Initiate Cognitive Intervention -&gt;
                 </a>
             </div>
@@ -125,7 +228,8 @@
             </div>
         </div>
     </main>
-    
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
