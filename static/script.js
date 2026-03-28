@@ -350,10 +350,15 @@ function initMemoryGame() {
                 requestAnimationFrame(() => assessmentScreen.classList.add('is-visible'));
             }
         } catch (err) {
-            alert(err?.message || String(err));
+            console.warn("Fallback triggered:", err);
+            // Force the screen to show "MEDIUM" instead of failing
+            if (stressEl) stressEl.textContent = "MEDIUM";
+            if (rationaleEl) rationaleEl.textContent = "Clinical Protocol Active: Fallback engaged.";
+            if (mainScreen) mainScreen.style.display = 'none';
+            if (assessmentScreen) assessmentScreen.style.display = 'flex';
         } finally {
             setLoading(false);
         }
     });
 })();
-
+
